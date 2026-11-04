@@ -1,0 +1,70 @@
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-8.13-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+
+Welcome to Gradle 8.13!
+
+Here are the highlights of this release:
+ - Daemon JVM auto-provisioning
+ - Enhancements for Scala plugin and JUnit testing
+ - Improvements for build authors and plugin developers
+
+For more details see https://docs.gradle.org/8.13/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugBuildConfig
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+
+> Task :app:processDebugMainManifest
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/AndroidManifest.xml:29:9-42 Warning:
+	android:extractNativeLibs should not be specified in this source AndroidManifest.xml file. See https://d.android.com/guide/topics/manifest/application-element#extractNativeLibs for more information.
+The AGP Upgrade Assistant can remove the attribute from the AndroidManifest.xml file and update the build file accordingly. See https://d.android.com/studio/build/agp-upgrade-assistant for more information.
+
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebug
+> Task :app:javaPreCompileDebugUnitTest FROM-CACHE
+> Task :app:processDebugResources
+
+> Task :app:compileDebugKotlin
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/core/CrashHandler.kt:33:21 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'SimpleDateFormat?'.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/core/IbbLog.kt:46:25 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'SimpleDateFormat?'.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/runtime/RuntimeManager.kt:236:63 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'File?'.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/game/overlay/GameToolbar.kt:128:46 'val Icons.Rounded.ExitToApp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.ExitToApp.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/screens/AccountsScreen.kt:88:21 'val LocalClipboardManager: ProvidableCompositionLocal<ClipboardManager>' is deprecated. Use LocalClipboard instead which supports suspend functions.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/screens/AccountsScreen.kt:123:42 'val Icons.Rounded.Login: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Login.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/screens/AccountsScreen.kt:191:50 'val Icons.Rounded.OpenInNew: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.OpenInNew.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/screens/ConsoleScreen.kt:77:21 'val LocalClipboardManager: ProvidableCompositionLocal<ClipboardManager>' is deprecated. Use LocalClipboard instead which supports suspend functions.
+
+> Task :app:compileDebugJavaWithJavac
+> Task :app:processDebugJavaRes
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:testDebugUnitTest
+
+[Incubating] Problems report is available at: file:///home/runner/work/IBB-Launcher/IBB-Launcher/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 51s
+24 actionable tasks: 23 executed, 1 from cache
