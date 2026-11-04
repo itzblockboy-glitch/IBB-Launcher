@@ -100,7 +100,8 @@ data class MsaDeviceCode(
     @SerialName("user_code") val userCode: String = "",
     @SerialName("device_code") val deviceCode: String = "",
     @SerialName("verification_uri") val verificationUri: String = "",
-    @SerialName("expires_in") val expiresIn: Long = 0,
+    /** Microsoft always sends ~900s; the fallback keeps the polling loop sane if it does not. */
+    @SerialName("expires_in") val expiresIn: Long = 900,
     val interval: Long = 5,
     val message: String = "",
 )
