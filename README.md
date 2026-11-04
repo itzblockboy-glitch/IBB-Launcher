@@ -154,13 +154,21 @@ See `app/src/main/assets/licenses/` for the full texts shipped inside the APK.
 
 ## Download
 
-Prebuilt APKs are attached to [Releases](../../releases) and rebuilt by CI
-(`.github/workflows/build-apk.yml`) on every push. Locally built artifacts land in `artifacts/`.
+Download the current build:
+
+* **Release APK (3.7 MB, R8-minified)** —
+  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.0.1/app-release.apk>
+* **Debug APK (21 MB, readable logs)** —
+  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.0.1/app-debug.apk>
+* Checksums: [v1.0.1 release notes](https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.0.1)
+
+The same two files sit in `artifacts/` in this checkout (with `SHA256SUMS.txt`), and every push is
+rebuilt by `.github/workflows/build-apk.yml`; pushing a `v*` tag publishes a new release.
 
 | File | Size | Install |
 |---|---|---|
-| `IBB-Launcher-1.0.0-release.apk` | ~3.7 MB (R8-minified) | `adb install -r …` |
-| `IBB-Launcher-1.0.0-debug.apk` | ~21 MB, no shrinking | same, distinct package id `.debug` |
+| `app-release.apk` | 3.7 MB | `adb install -r app-release.apk` |
+| `app-debug.apk` | 21 MB, no shrinking | same; distinct package id `dev.ibb.launcher.debug` |
 
 Minimum Android 8.0 (API 26). Arm64, armv7 and x86_64 are all in the one APK.
 

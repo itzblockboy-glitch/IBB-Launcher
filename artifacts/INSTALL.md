@@ -1,16 +1,18 @@
-# IBB Launcher 1.0.0 — installing the APK
+# IBB Launcher 1.0.1 — installing the APK
 
 Package: `dev.ibb.launcher` (debug build installs as `dev.ibb.launcher.debug`, so both can coexist)
 Minimum Android: 8.0 (API 26) · Architectures: arm64-v8a, armeabi-v7a, x86_64 · Signed: APK v2
 
 | File | Size | Notes |
 |---|---|---|
-| `IBB-Launcher-1.0.0-release.apk` | 3.7 MB | R8-minified, debug-signed (fine to install) |
-| `IBB-Launcher-1.0.0-debug.apk` | 21 MB | no shrinking, readable stack traces |
+| `app-release.apk` | 3.7 MB | R8-minified, debug-signed (fine to install) |
+| `app-debug.apk` | 21 MB | no shrinking, readable stack traces |
 
-Verify: `sha256sum -c SHA256SUMS.txt`
+Release page: https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.0.1
 
-Install over USB:      `adb install -r IBB-Launcher-1.0.0-release.apk`
+Verify: `sha256sum -c SHA256SUMS.txt` (the checksums also appear on the release page).
+
+Install over USB:      `adb install -r app-release.apk`
 Install on the device: copy the file over, tap it, allow "install unknown apps" for that app.
 
 If Android refuses the install it is almost always (a) an older build with the same package id —
