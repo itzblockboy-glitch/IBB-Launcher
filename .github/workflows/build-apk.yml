@@ -5,6 +5,7 @@ name: Build APK
 on:
   push:
     branches: ['**']
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -167,3 +168,23 @@ jobs:
           path: out/*.apk
           retention-days: 90
           if-no-files-found: error
+
+      # Runs only for `v*` tags: turns the build into a downloadable GitHub Release. This is the
+      # only reliable way to get binaries out of Actions from behind a restrictive network, because
+      # release assets are served from github.com, not the artifact CDN.
+      - name: Attach APKs to the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          ( cd out && sha256sum *.apk > SHA256SUMS.txt && cat SHA256SUMS.txt )
+          # `gh release view` fails when the release does not exist yet; create it in that case so a
+          # fresh tag always produces a downloadable build.
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
+            gh release create "$GITHUB_REF_NAME" --title "IBB Launcher $GITHUB_REF_NAME" \
+              --notes "Automated build of $GITHUB_SHA. See artifacts/INSTALL.md in the repository for install and native-layer notes."
+          for f in out/*.apk out/SHA256SUMS.txt; do
+            echo "uploading $f"
+            gh release upload "$GITHUB_REF_NAME" "$f" --clobber
+          done
