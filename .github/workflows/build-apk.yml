@@ -12,11 +12,15 @@ concurrency:
   group: apk-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.console=plain -Dorg.gradle.jvmargs=-Xmx4g'
+
 jobs:
   build:
     name: assembleDebug + unit tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # Pinned: ubuntu-latest moves between images; the SDK layout below is stable on 22.04.
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
@@ -27,13 +31,19 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install platform + build tools
+      - name: Show Android SDK
         run: |
-          sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
-          yes | sdkmanager --licenses > /dev/null || true
+          # The runner image ships the SDK; just make sure it is on PATH and tell us what we have.
+          export ANDROID_HOME="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          ls "$ANDROID_HOME" || true
+          ls "$ANDROID_HOME/platforms" || true
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          echo "---"
+          java -version
 
       - name: Gradle cache
         uses: actions/cache@v4
@@ -45,22 +55,43 @@ jobs:
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Unit tests
-        run: ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew :app:testDebugUnitTest --stacktrace 2>&1 | tee test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            # Surface failures as annotations: raw logs are not always retrievable via the API.
+            grep -E "^(e: |error: |FAILURE|> Task .* FAILED)" test.log | head -25 | while IFS= read -r line; do
+              echo "::error::$line"
+            done
+          fi
+          exit "$status"
 
-      - name: Build debug APK
-        run: ./gradlew :app:assembleDebug --no-daemon --stacktrace
-
-      - name: Build release APK (debug-signed when no keystore is configured)
-        run: ./gradlew :app:assembleRelease --no-daemon --stacktrace
+      - name: Build APKs
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleDebug :app:assembleRelease --stacktrace 2>&1 | tee build.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            grep -E "^(e: |error: |FAILURE|> Task .* FAILED|Caused by)" build.log | head -40 | while IFS= read -r line; do
+              echo "::error::$line"
+            done
+            echo "::group::tail of build log"
+            tail -120 build.log
+            echo "::endgroup::"
+          fi
+          exit "$status"
 
       - name: Collect artifacts
         run: |
           mkdir -p out
           find app/build/outputs/apk -name '*.apk' -exec cp {} out/ \;
           ls -la out
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           for f in out/*.apk; do
             echo "--- $f"
-            "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging "$f" 2>/dev/null | head -4 || true
+            "$BT/aapt2" dump badging "$f" 2>/dev/null | head -3 || true
+            ls -lh "$f"
           done
 
       - name: Upload APKs
@@ -70,14 +101,3 @@ jobs:
           path: out/*.apk
           retention-days: 90
           if-no-files-found: error
-
-      - name: Upload test report on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: |
-            app/build/reports/tests/**
-            app/build/reports/lint-results-*.html
-          retention-days: 7
-          if-no-files-found: ignore
