@@ -310,7 +310,7 @@ private fun android.content.ContentResolver.displayName(uri: Uri): String? = run
 }.getOrNull()
 
 
-/** MIME filters per category; `*/*` is the only safe filter for `.jar`-shaped archives. */
+// MIME filters per category; a wildcard type is the only safe filter for .jar-shaped archives.
 private fun ModCategory.mimes(): Array<String> = when (this) {
     ModCategory.MOD -> arrayOf("application/java-archive", "application/x-java-archive", "*/*")
     ModCategory.RESOURCE_PACK, ModCategory.SHADER_PACK, ModCategory.DATAPACK ->

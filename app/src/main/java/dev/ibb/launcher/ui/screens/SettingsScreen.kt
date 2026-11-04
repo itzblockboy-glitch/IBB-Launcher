@@ -140,8 +140,8 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Vertical sync",
                     description = "Prevents tearing; adds one frame of latency",
                     trailing = {
-                        GlassSwitch(settings.graphics.vsync, onCheckedChange = {
-                            app.settingsStore.update { it.copy(graphics = it.graphics.copy(vsync = it)) }
+                        GlassSwitch(settings.graphics.vsync, onCheckedChange = { checked ->
+                            app.settingsStore.update { s -> s.copy(graphics = s.graphics.copy(vsync = checked)) }
                         })
                     },
                 )
@@ -165,8 +165,8 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Adreno turbo",
                     description = "Hints the driver for sustained clocks on Snapdragon GPUs",
                     trailing = {
-                        GlassSwitch(settings.graphics.adrenoTurbo, onCheckedChange = {
-                            app.settingsStore.update { it.copy(graphics = it.graphics.copy(adrenoTurbo = it)) }
+                        GlassSwitch(settings.graphics.adrenoTurbo, onCheckedChange = { checked ->
+                            app.settingsStore.update { s -> s.copy(graphics = s.graphics.copy(adrenoTurbo = checked)) }
                         })
                     },
                 )
@@ -174,8 +174,8 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Big core affinity",
                     description = "Keeps the render thread on performance cores",
                     trailing = {
-                        GlassSwitch(settings.graphics.bigCoreAffinity, onCheckedChange = {
-                            app.settingsStore.update { it.copy(graphics = it.graphics.copy(bigCoreAffinity = it)) }
+                        GlassSwitch(settings.graphics.bigCoreAffinity, onCheckedChange = { checked ->
+                            app.settingsStore.update { s -> s.copy(graphics = s.graphics.copy(bigCoreAffinity = checked)) }
                         })
                     },
                 )
@@ -219,8 +219,8 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Auto-tune on launch",
                     description = "Adjusts -Xmx down if the last session ran out of memory",
                     trailing = {
-                        GlassSwitch(settings.performance.autoRamOnStart, onCheckedChange = {
-                            app.settingsStore.update { it.copy(performance = it.performance.copy(autoRamOnStart = it)) }
+                        GlassSwitch(settings.performance.autoRamOnStart, onCheckedChange = { checked ->
+                            app.settingsStore.update { s -> s.copy(performance = s.performance.copy(autoRamOnStart = checked)) }
                         })
                     },
                 )
