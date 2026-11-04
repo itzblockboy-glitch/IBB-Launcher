@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IBB Launcher</string>
+    <string name="app_tagline">Craft without compromise</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_versions">Versions</string>
+    <string name="nav_skins">Skins</string>
+    <string name="nav_accounts">Accounts</string>
+    <string name="nav_console">Console</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Actions -->
+    <string name="action_play">Play</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_install">Install</string>
+    <string name="action_installing">Installing…</string>
+    <string name="action_installed">Installed</string>
+    <string name="action_launching">Launching…</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_reset">Reset</string>
+    <string name="action_browse">Browse</string>
+    <string name="action_close">Close</string>
+
+    <!-- Runtime -->
+    <string name="runtime_title">Java runtime</string>
+    <string name="runtime_installed">Installed</string>
+    <string name="runtime_download">Download</string>
+    <string name="runtime_required">Java %1$d required</string>
+
+    <!-- Accounts -->
+    <string name="account_offline">Offline profile</string>
+    <string name="account_microsoft">Microsoft account</string>
+    <string name="account_switch">Switch account</string>
+
+    <!-- Console -->
+    <string name="console_title">Live console</string>
+    <string name="console_empty">Waiting for the runtime to stream logs…</string>
+    <string name="console_copy">Copy</string>
+    <string name="console_clear">Clear</string>
+
+    <!-- Errors -->
+    <string name="error_generic">Something went wrong</string>
+    <string name="error_network">No internet connection</string>
+    <string name="error_version_missing">This version is not installed yet</string>
+    <string name="error_launch_failed">The game could not start</string>
+
+    <string name="notification_channel_game">Game session</string>
+    <string name="notification_game_running">IBB Launcher is running Minecraft</string>
+
+    <string name="about_title">About</string>
+    <string name="about_body">IBB Launcher is an independent Minecraft: Java Edition launcher for Android. Not affiliated with Mojang or Microsoft. The execution layer is inspired by PojavLauncher (GPLv3).</string>
+    <string name="about_credits">Execution layer: PojavLauncher (GPLv3). Runtimes: AngelAuraMC OpenJDK builds. Fonts: Outfit and Inter (SIL OFL 1.1).</string>
+    <string name="legal_notice">Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</string>
+</resources>

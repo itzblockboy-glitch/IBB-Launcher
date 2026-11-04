@@ -1,0 +1,44 @@
+IBB Launcher — third-party notices
+==================================
+
+IBB Launcher is an independent Minecraft: Java Edition launcher for Android.
+"Minecraft" is a trademark of Mojang Synergies AB. This application is not
+approved by or associated with Mojang or Microsoft, and it ships no Mojang
+code or assets.
+
+1. Execution layer — PojavLauncher / Amethyst-Android
+----------------------------------------------------
+The native bridge design (JLI_Launch integration, EGL bridge, GLFW/input
+bridge, JVM hooks) is derived from:
+
+  PojavLauncher            https://github.com/PojavLauncherTeam/PojavLauncher
+  Amethyst-Android         https://github.com/AngelAuraMC/Amethyst-Android
+
+both licensed under the GNU General Public License v3.0. If you distribute a
+build that includes their prebuilt shared objects (libpojavexec.so,
+libpojavexec_awt.so, libexithook.so), that build is a GPLv3 derivative work:
+you must make the corresponding source available and license the combined
+work under the GPLv3. See LICENSE-GPL-3.0.txt.
+
+2. Java runtimes
+----------------
+OpenJDK Android builds are downloaded at runtime from:
+
+  angelauramc-openjdk-build
+  https://github.com/AngelAuraMC/angelauramc-openjdk-build
+
+They are licensed under GPLv2 with the Classpath Exception. They are not
+bundled in the APK; the user downloads them on first launch of a version.
+
+3. AndroidX / Jetpack Compose / Kotlin
+--------------------------------------
+  androidx.*            Apache License 2.0
+  Kotlin, kotlinx.*     Apache License 2.0 (JetBrains)
+  Tukaani XZ for Java   Public domain (0BSD-style)
+  Inter, Outfit fonts   SIL Open Font License 1.1
+
+4. Minecraft game files
+-----------------------
+Version manifests, libraries, assets and the client jar are downloaded at
+runtime from Mojang's public metadata services. Using them requires a
+legitimately purchased copy of Minecraft: Java Edition.

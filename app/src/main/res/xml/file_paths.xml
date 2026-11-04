@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Exported console dumps and crash reports (<externalFilesDir>/minecraft/logs). -->
+    <external-files-path name="ibb_logs" path="minecraft/logs/" />
+    <!-- Instance content (mods, resource packs, saves) for the built-in file explorer. -->
+    <external-files-path name="ibb_game" path="minecraft/instances/" />
+    <!-- Fallback if the external files dir is unavailable and the game root lives internally. -->
+    <files-path name="ibb_logs_internal" path="minecraft/logs/" />
+    <!-- SAF cache used when importing files into an instance. -->
+    <cache-path name="ibb_cache" path="ibb/" />
+</paths>

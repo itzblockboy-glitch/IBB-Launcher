@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand core (kept in sync with ui/theme/Color.kt) -->
+    <color name="ibb_void">#FF05060B</color>
+    <color name="ibb_indigo">#FF15103A</color>
+    <color name="ibb_violet">#FF7C5CFF</color>
+    <color name="ibb_cyan">#FF22D3EE</color>
+    <color name="ibb_amber">#FFFFC48A</color>
+    <color name="ibb_porcelain">#FFF4F1FA</color>
+    <color name="ibb_glass">#14FFFFFF</color>
+    <color name="ibb_splash_bg">#FF07080F</color>
+</resources>
