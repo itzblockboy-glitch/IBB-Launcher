@@ -106,26 +106,54 @@ jobs:
           for f in test.log build.log; do [ -f "$f" ] && cp "$f" publish/ || true; done
           if [ -d out ]; then
             ls -la out > publish/apk-list.txt || true
-            for f in out/*.apk; do [ -f "$f" ] && cp "$f" publish/ || true; done
+            for apk in out/*.apk; do [ -f "$apk" ] && cp "$apk" publish/ || true; done
           fi
-          cd publish
-          [ -z "$(ls -A)" ] && { echo "nothing to publish"; exit 0; }
-          for f in *; do
-            b64=$(base64 -w 0 "$f")
-            path="build/${{ github.sha }}/$f"
-            sha=$(curl -sS -H "Authorization: Bearer $GH_TOKEN" \
-              "https://api.github.com/repos/${{ github.repository }}/contents/$path?ref=ci-artifacts" \
-              | python3 -c "import sys,json;print(json.load(sys.stdin).get('sha',''))" 2>/dev/null || true)
-            payload=$(python3 -c "
-import json,sys
-path=sys.argv[1]; b64=sys.argv[2]; sha=sys.argv[3]
-d={'message':'ci: publish '+path.split('/',2)[-1],'content':b64,'branch':'ci-artifacts'}
-if sha: d['sha']=sha
-print(json.dumps(d))" "$path" "$b64" "$sha")
-            curl -sS -X PUT -H "Authorization: Bearer $GH_TOKEN" -H "Content-Type: application/json" \
-              "https://api.github.com/repos/${{ github.repository }}/contents/$path" -d "$payload" > /dev/null \
-              || echo "::warning::could not publish $f"
-          done
+          if [ -z "$(ls -A publish)" ]; then echo "nothing to publish"; exit 0; fi
+          python3 - <<'PY'
+          import base64, json, os, pathlib, urllib.request
+
+          repo = os.environ["GITHUB_REPOSITORY"]
+          token = os.environ["GH_TOKEN"]
+          branch = "ci-artifacts"
+          api = f"https://api.github.com/repos/{repo}"
+
+          def call(method, url, payload=None):
+              data = json.dumps(payload).encode() if payload else None
+              req = urllib.request.Request(url, data=data, method=method)
+              req.add_header("Authorization", f"Bearer {token}")
+              req.add_header("Accept", "application/vnd.github+json")
+              if data:
+                  req.add_header("Content-Type", "application/json")
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as response:
+                      return json.load(response)
+              except Exception as exc:                                    # noqa: BLE001
+                  print(f"  ! {method} {url} -> {exc}")
+                  return None
+
+          # Create the orphan branch on first use.
+          if call("GET", f"{api}/git/ref/heads/{branch}") is None:
+              head = call("GET", f"{api}/git/ref/heads/{os.environ['GITHUB_REF_NAME']}")
+              base = head["object"]["sha"] if head else os.environ["GITHUB_SHA"]
+              call("POST", f"{api}/git/refs", {"ref": f"refs/heads/{branch}", "sha": base})
+              print(f"created branch {branch}")
+
+          folder = f"build/{os.environ['GITHUB_SHA']}"
+          for path in sorted(pathlib.Path("publish").iterdir()):
+              blob = base64.b64encode(path.read_bytes()).decode()
+              target = f"{folder}/{path.name}"
+              existing = call("GET", f"{api}/contents/{target}?ref={branch}")
+              payload = {
+                  "message": f"ci: publish {path.name}",
+                  "content": blob,
+                  "branch": branch,
+              }
+              if existing and "sha" in existing:
+                  payload["sha"] = existing["sha"]
+              result = call("PUT", f"{api}/contents/{target}", payload)
+              size = path.stat().st_size
+              print(f"  {'ok ' if result else 'FAILED'} {target} ({size} bytes)")
+          PY
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
