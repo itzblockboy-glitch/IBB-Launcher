@@ -1,4 +1,4 @@
-/* Keep the app small and fast. Most of the hot path is Kotlin data plumbing. */
+# Keep the app small and fast. Most of the hot path is Kotlin data plumbing.
 -keepattributes Signature, *Annotation*, InnerClasses, EnclosingMethod
 
 # --- Serialized network models ---------------------------------------------------------------
