@@ -95,7 +95,10 @@ android {
                     keyPassword = signingValue("keyPassword", "IBB_KEY_PASSWORD")
                 }
             } else {
-                null
+                // No release keystore configured: still produce an installable APK signed with
+                // the debug key (that is what `assembleRelease` does for sideloading) instead of
+                // an unsigned artifact. Configure keystore.properties for a store-ready build.
+                signingConfigs.getByName("debug")
             }
         }
     }
