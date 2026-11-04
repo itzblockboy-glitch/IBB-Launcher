@@ -12,6 +12,10 @@ concurrency:
   group: apk-${{ github.ref }}
   cancel-in-progress: true
 
+# The publish step writes build logs/APKs to the ci-artifacts branch, so the token needs write.
+permissions:
+  contents: write
+
 env:
   GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.console=plain -Dorg.gradle.jvmargs=-Xmx4g'
 
@@ -61,9 +65,10 @@ jobs:
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
             # Surface failures as annotations: raw logs are not always retrievable via the API.
-            grep -E "^(e: |error: |FAILURE|> Task .* FAILED)" test.log | head -25 | while IFS= read -r line; do
-              echo "::error::$line"
+            grep -E "^e: |^error: |FAILURE:|> Task .* FAILED" test.log | head -40 | while IFS= read -r line; do
+              echo "::error title=compile::$line"
             done
+            grep -E "^e: " test.log | wc -l | while IFS= read -r n; do echo "::error title=summary::$n compiler errors"; done
           fi
           exit "$status"
 
@@ -73,8 +78,8 @@ jobs:
           ./gradlew :app:assembleDebug :app:assembleRelease --stacktrace 2>&1 | tee build.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
-            grep -E "^(e: |error: |FAILURE|> Task .* FAILED|Caused by)" build.log | head -40 | while IFS= read -r line; do
-              echo "::error::$line"
+            grep -E "^e: |^error: |FAILURE:|> Task .* FAILED|Caused by" build.log | head -40 | while IFS= read -r line; do
+              echo "::error title=build::$line"
             done
             echo "::group::tail of build log"
             tail -120 build.log
