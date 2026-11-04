@@ -1,0 +1,3 @@
+
+# Build outputs pulled back from the CI run (binary, keep out of git history)
+artifacts/*.apk

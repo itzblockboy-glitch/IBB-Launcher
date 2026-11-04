@@ -151,3 +151,32 @@ Run them with `./gradlew :app:testDebugUnitTest`.
   a legitimately owned copy of the game.
 
 See `app/src/main/assets/licenses/` for the full texts shipped inside the APK.
+
+## Download
+
+Prebuilt APKs are attached to [Releases](../../releases) and rebuilt by CI
+(`.github/workflows/build-apk.yml`) on every push. Locally built artifacts land in `artifacts/`.
+
+| File | Size | Install |
+|---|---|---|
+| `IBB-Launcher-1.0.0-release.apk` | ~3.7 MB (R8-minified) | `adb install -r …` |
+| `IBB-Launcher-1.0.0-debug.apk` | ~21 MB, no shrinking | same, distinct package id `.debug` |
+
+Minimum Android 8.0 (API 26). Arm64, armv7 and x86_64 are all in the one APK.
+
+### What runs today, and what does not
+
+The launcher itself — version catalogue, Microsoft device-code sign-in, downloads and asset
+verification, mod/resource-pack/shader/world management, per-version settings, on-screen control
+editor, console — is complete and installs and runs from these APKs.
+
+Actually **booting Minecraft** additionally needs the native execution layer, which is a separate
+build and is *not* in these APKs:
+
+* `libpojavexec.so` + `libexithook.so` — build with `./gradlew :app:assembleDebug -PwithNative`
+  on a machine with the NDK/CMake for the PojavLauncher-derived `pojavexec` sources;
+* `glfw-stub.jar` and an Android JRE 8/17 image, installed from **Settings → Optional components**
+  and **Settings → Runtimes**.
+
+Without them the launch path reports "native bridge unavailable" in the console instead of
+crashing — see [docs/NATIVE_LAYER.md](docs/NATIVE_LAYER.md).

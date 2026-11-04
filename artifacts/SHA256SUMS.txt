@@ -1,0 +1,2 @@
+020d806d4f30c5271443151467ef28e7c6f0c06f96e5cfd15b95db7d25df37fc  artifacts/IBB-Launcher-1.0.0-debug.apk
+f7679159f86e87c19e4a0f1f79fc791a50d80ca6f7efc86bf657e08d3c631983  artifacts/IBB-Launcher-1.0.0-release.apk
