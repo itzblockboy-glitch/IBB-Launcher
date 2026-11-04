@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +48,7 @@ import dev.ibb.launcher.core.IbbLog
 import dev.ibb.launcher.core.IbbPaths
 import dev.ibb.launcher.ui.components.BrandHeader
 import dev.ibb.launcher.ui.components.GlassCard
+import dev.ibb.launcher.ui.components.SectionHeader
 import dev.ibb.launcher.ui.components.GlassIconButton
 import dev.ibb.launcher.ui.components.clickableNoRipple
 import dev.ibb.launcher.ui.theme.Amber

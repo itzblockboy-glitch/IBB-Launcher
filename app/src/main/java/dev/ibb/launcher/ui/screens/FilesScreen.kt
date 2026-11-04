@@ -160,7 +160,7 @@ fun FilesScreen(
                 IbbButton(
                     text = "Add files",
                     icon = Icons.Rounded.Add,
-                    onClick = { picker.launch(category.mimeTypes) },
+                    onClick = { picker.launch(category.mimes()) },
                     enabled = !busy,
                     loading = busy,
                     style = IbbButtonStyle.PRIMARY,
@@ -309,14 +309,14 @@ private fun android.content.ContentResolver.displayName(uri: Uri): String? = run
     }
 }.getOrNull()
 
+
 /** MIME filters per category; `*/*` is the only safe filter for `.jar`-shaped archives. */
-private val ModCategory.mimeTypes: Array<String>
-    get() = when (this) {
-        ModCategory.MOD -> arrayOf("application/java-archive", "application/x-java-archive", "*/*")
-        ModCategory.RESOURCE_PACK, ModCategory.SHADER_PACK, ModCategory.DATAPACK ->
-            arrayOf("application/zip", "application/x-zip", "*/*")
-        ModCategory.WORLD -> arrayOf("application/zip", "application/octet-stream", "*/*")
-        ModCategory.CONFIG -> arrayOf("application/json", "text/plain", "*/*")
-    }
+private fun ModCategory.mimes(): Array<String> = when (this) {
+    ModCategory.MOD -> arrayOf("application/java-archive", "application/x-java-archive", "*/*")
+    ModCategory.RESOURCE_PACK, ModCategory.SHADER_PACK, ModCategory.DATAPACK ->
+        arrayOf("application/zip", "application/x-zip", "*/*")
+    ModCategory.WORLD -> arrayOf("application/zip", "application/octet-stream", "*/*")
+    ModCategory.CONFIG -> arrayOf("application/json", "text/plain", "*/*")
+}
 
 private const val TAG = "FilesScreen"

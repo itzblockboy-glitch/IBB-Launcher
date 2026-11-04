@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -57,6 +58,7 @@ import dev.ibb.launcher.ui.components.clickableNoRipple
 import dev.ibb.launcher.ui.components.GlassIconButton
 import dev.ibb.launcher.ui.game.overlay.GameToolbar
 import dev.ibb.launcher.ui.game.overlay.VirtualController
+import dev.ibb.launcher.ui.theme.Cyan
 import dev.ibb.launcher.ui.theme.Porcelain
 import dev.ibb.launcher.ui.theme.Violet
 import kotlinx.coroutines.CoroutineScope
@@ -368,7 +370,7 @@ private fun LaunchStatusCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                color = if (isError) Color(0xFFFF8FA3) : Porcelain,
+                color = if (isError) Color(0xFFFF8FA3) else Porcelain,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
             )

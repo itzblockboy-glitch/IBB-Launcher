@@ -186,6 +186,12 @@ fun SkinsScreen(app: IbbApplication) {
     }
 }
 
+// Top-level so the enum entries below can reference them while the enum class is
+// still being initialised (a companion object would not be available yet).
+private val EmberAccent = Color(0xFFFFC48A)
+private val MossAccent = Color(0xFF4ADE80)
+private val RoseAccent = Color(0xFFFF6B81)
+
 enum class SkinPresets(
     val label: String,
     val skin: Color,
@@ -197,16 +203,10 @@ enum class SkinPresets(
 ) {
     VOID("Void", Color(0xFFF3D3B5), Color(0xFFD3AC8D), Color(0xFF1B1A22), Color(0xFF7C5CFF), Color(0xFF241E3A), Violet),
     TUNDRA("Tundra", Color(0xFFE8D5C0), Color(0xFFC9AE95), Color(0xFF8A5A2B), Color(0xFF22D3EE), Color(0xFF1D2C33), Cyan),
-    EMBER("Ember", Color(0xFFC08A5E), Color(0xFF9C6A43), Color(0xFF3A2418), EMPER_ACCENT, Color(0xFF3A2018), EMPER_ACCENT),
-    MOSS("Moss", Color(0xFFD9BFA4), Color(0xFFB99A80), Color(0xFF2F3B22), MOSS_ACCENT, Color(0xFF1E2A1C), MOSS_ACCENT),
-    ROSEWOOD("Rosewood", Color(0xFFB97C57), Color(0xFF96603F), Color(0xFF2C1F2B), ROSE_ACCENT, Color(0xFF2B1A22), ROSE_ACCENT),
+    EMBER("Ember", Color(0xFFC08A5E), Color(0xFF9C6A43), Color(0xFF3A2418), EmberAccent, Color(0xFF3A2018), EmberAccent),
+    MOSS("Moss", Color(0xFFD9BFA4), Color(0xFFB99A80), Color(0xFF2F3B22), MossAccent, Color(0xFF1E2A1C), MossAccent),
+    ROSEWOOD("Rosewood", Color(0xFFB97C57), Color(0xFF96603F), Color(0xFF2C1F2B), RoseAccent, Color(0xFF2B1A22), RoseAccent),
     ;
-
-    companion object {
-        private val EMPER_ACCENT = Color(0xFFFFC48A)
-        private val MOSS_ACCENT = Color(0xFF4ADE80)
-        private val ROSE_ACCENT = Color(0xFFFF6B81)
-    }
 }
 
 @Composable

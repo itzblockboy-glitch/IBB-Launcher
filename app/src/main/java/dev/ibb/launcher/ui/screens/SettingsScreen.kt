@@ -60,6 +60,7 @@ import dev.ibb.launcher.ui.components.GlassSlider
 import dev.ibb.launcher.ui.components.GlassSwitch
 import dev.ibb.launcher.ui.components.IbbButton
 import dev.ibb.launcher.ui.components.IbbButtonStyle
+import dev.ibb.launcher.ui.components.SectionHeader
 import dev.ibb.launcher.ui.components.SettingRow
 import dev.ibb.launcher.ui.components.clickableNoRipple
 import dev.ibb.launcher.ui.theme.Amber
@@ -139,7 +140,7 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Vertical sync",
                     description = "Prevents tearing; adds one frame of latency",
                     trailing = {
-                        GlassSwitch(settings.graphics.vsync, {
+                        GlassSwitch(settings.graphics.vsync, onCheckedChange = {
                             app.settingsStore.update { it.copy(graphics = it.graphics.copy(vsync = it)) }
                         })
                     },
@@ -164,7 +165,7 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Adreno turbo",
                     description = "Hints the driver for sustained clocks on Snapdragon GPUs",
                     trailing = {
-                        GlassSwitch(settings.graphics.adrenoTurbo, {
+                        GlassSwitch(settings.graphics.adrenoTurbo, onCheckedChange = {
                             app.settingsStore.update { it.copy(graphics = it.graphics.copy(adrenoTurbo = it)) }
                         })
                     },
@@ -173,7 +174,7 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Big core affinity",
                     description = "Keeps the render thread on performance cores",
                     trailing = {
-                        GlassSwitch(settings.graphics.bigCoreAffinity, {
+                        GlassSwitch(settings.graphics.bigCoreAffinity, onCheckedChange = {
                             app.settingsStore.update { it.copy(graphics = it.graphics.copy(bigCoreAffinity = it)) }
                         })
                     },
@@ -218,7 +219,7 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Auto-tune on launch",
                     description = "Adjusts -Xmx down if the last session ran out of memory",
                     trailing = {
-                        GlassSwitch(settings.performance.autoRamOnStart, {
+                        GlassSwitch(settings.performance.autoRamOnStart, onCheckedChange = {
                             app.settingsStore.update { it.copy(performance = it.performance.copy(autoRamOnStart = it)) }
                         })
                     },
@@ -330,7 +331,7 @@ fun SettingsScreen(app: IbbApplication) {
                 SettingRow(
                     title = "Invert vertical look",
                     trailing = {
-                        GlassSwitch(app.settingsStore.inputSettings().invertMouseY, { checked ->
+                        GlassSwitch(app.settingsStore.inputSettings().invertMouseY, onCheckedChange = { checked ->
                             app.settingsStore.saveInputSettings(app.settingsStore.inputSettings().copy(invertMouseY = checked))
                         })
                     },
@@ -339,7 +340,7 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Gamepad support",
                     description = "USB / Bluetooth controllers map to keyboard & mouse",
                     trailing = {
-                        GlassSwitch(app.settingsStore.inputSettings().gamepadEnabled, { checked ->
+                        GlassSwitch(app.settingsStore.inputSettings().gamepadEnabled, onCheckedChange = { checked ->
                             app.settingsStore.saveInputSettings(app.settingsStore.inputSettings().copy(gamepadEnabled = checked))
                         })
                     },
@@ -365,36 +366,36 @@ fun SettingsScreen(app: IbbApplication) {
                     title = "Keep screen on while playing",
                     description = "Prevents the system from dimming mid-session",
                     trailing = {
-                        GlassSwitch(settings.keepScreenOn) { checked ->
+                        GlassSwitch(settings.keepScreenOn, onCheckedChange = { checked ->
                             app.settingsStore.update { it.copy(keepScreenOn = checked) }
-                        }
+                        })
                     },
                 )
                 SettingRow(
                     title = "Console overlay in game",
                     description = "Show the log drawer button in the session toolbar",
                     trailing = {
-                        GlassSwitch(settings.showConsoleOverlay) { checked ->
+                        GlassSwitch(settings.showConsoleOverlay, onCheckedChange = { checked ->
                             app.settingsStore.update { it.copy(showConsoleOverlay = checked) }
-                        }
+                        })
                     },
                 )
                 SettingRow(
                     title = "Check for launcher updates",
                     description = "Uses one small request per launch",
                     trailing = {
-                        GlassSwitch(settings.autoUpdateLauncher) { checked ->
+                        GlassSwitch(settings.autoUpdateLauncher, onCheckedChange = { checked ->
                             app.settingsStore.update { it.copy(autoUpdateLauncher = checked) }
-                        }
+                        })
                     },
                 )
                 SettingRow(
                     title = "Share anonymous diagnostics",
                     description = "Off by default. Crash reports never leave the device unless you share them.",
                     trailing = {
-                        GlassSwitch(settings.telemetryOptIn) { checked ->
+                        GlassSwitch(settings.telemetryOptIn, onCheckedChange = { checked ->
                             app.settingsStore.update { it.copy(telemetryOptIn = checked) }
-                        }
+                        })
                     },
                 )
             }

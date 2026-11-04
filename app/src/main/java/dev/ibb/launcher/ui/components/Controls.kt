@@ -147,10 +147,10 @@ private fun snap(fraction: Float, steps: Int, range: Float): Float {
 @Composable
 fun GlassSwitch(
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     accent: Color = Violet,
+    onCheckedChange: (Boolean) -> Unit,
 ) {
     val offset by animateFloatAsState(if (checked) 1f else 0f, spring(dampingRatio = 0.6f, stiffness = 700f), label = "switch")
     Box(

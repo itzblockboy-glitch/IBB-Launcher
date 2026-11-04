@@ -19,7 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.DeleteOutline
-import androidx.compose.material.icons.rounded.Microsoft
+import androidx.compose.material.icons.rounded.Login
 import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -120,7 +120,7 @@ fun AccountsScreen(app: IbbApplication) {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 IbbButton(
                     text = "Microsoft",
-                    icon = Icons.Rounded.Microsoft,
+                    icon = Icons.Rounded.Login,
                     style = IbbButtonStyle.PRIMARY,
                     modifier = Modifier.weight(1f),
                     enabled = authState !is AuthUiState.Waiting,

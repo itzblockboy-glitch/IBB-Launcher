@@ -32,12 +32,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import dev.ibb.launcher.ui.theme.GlassBorder
 import dev.ibb.launcher.ui.theme.GlassFill
 import dev.ibb.launcher.ui.theme.GlassHighlight
+import dev.ibb.launcher.ui.theme.Porcelain
 import dev.ibb.launcher.ui.theme.Violet
 
 /**

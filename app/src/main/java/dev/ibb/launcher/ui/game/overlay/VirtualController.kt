@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +35,7 @@ import dev.ibb.launcher.ui.theme.Porcelain
 import dev.ibb.launcher.ui.theme.Violet
 import org.lwjgl.glfw.CallbackBridge
 import kotlin.math.abs
+import kotlin.math.max
 
 /**
  * The on-screen controller.
@@ -63,7 +66,7 @@ fun VirtualController(
     // The hit boxes must be recomputed when the viewport changes shape, so the aspect ratio comes
     // from the real canvas instead of a hard-coded 16:9 guess (phones range from 16:9 to 21:9 and
     // tablets go the other way). Until the first layout pass we fall back to 16:9.
-    var viewportAspect by remember { mutableStateOf(1.78f) }
+    var viewportAspect by remember { mutableFloatStateOf(1.78f) }
     val boxes = remember(layout, viewportAspect) { ControlEngine.hitBoxes(layout, aspectRatio = viewportAspect) }
 
     Box(modifier.fillMaxSize()) {

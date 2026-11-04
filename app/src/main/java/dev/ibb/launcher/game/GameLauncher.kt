@@ -55,7 +55,7 @@ class GameLauncher(
         val account: Account,
         val versionId: String,
         val settings: LauncherSettings,
-        val surface: Surface,
+        val surface: Surface? = null,
         val surfaceWidth: Int,
         val surfaceHeight: Int,
         val versionSummary: VersionSummary? = null,

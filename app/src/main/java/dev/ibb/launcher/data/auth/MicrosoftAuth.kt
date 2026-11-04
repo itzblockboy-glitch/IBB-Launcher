@@ -165,7 +165,8 @@ class MicrosoftAuth(
         return if (msa.refreshToken.isBlank()) msa.copy(refreshToken = refreshToken) else msa
     }
 
-    private suspend fun finishSignIn(msa: MsaTokenResponse): Result = try {
+    private suspend fun finishSignIn(msa: MsaTokenResponse): Result {
+      return try {
         val xbl = authenticateXboxLive(msa.accessToken)
         val xsts = authorizeXsts(xbl.token)
         val mcToken = loginWithXbox(xsts)
@@ -185,9 +186,10 @@ class MicrosoftAuth(
         )
         IbbLog.i(TAG, "Signed in as ${account.username}")
         Result.Success(account, profile)
-    } catch (t: Throwable) {
+      } catch (t: Throwable) {
         IbbLog.e(TAG, "Minecraft sign-in failed", t)
         Result.Failure(t.message ?: "Sign-in failed", t)
+      }
     }
 
     private suspend fun authenticateXboxLive(msaAccessToken: String): XboxAuthResponse {
