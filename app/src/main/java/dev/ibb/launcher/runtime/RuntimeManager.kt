@@ -140,8 +140,9 @@ class RuntimeManager(
             withContext(Dispatchers.IO) { extractTarXz(archive, target) }
             archive.delete()
 
-            // Some builds ship the launcher binary as `bin/java.orig` behind a shell wrapper.
-            if (!File(target, "bin/java").exists() && !File(target, "bin/java.orig").exists()) {
+            // Some builds wrap the launcher binary as `bin/java.orig` behind a shell script.
+            if (!hasJavaBinary(target)) flattenForTest(target)
+            if (!hasJavaBinary(target)) {
                 throw IOException("Archive did not contain bin/java")
             }
             writeMarker(target, major)
@@ -232,16 +233,25 @@ class RuntimeManager(
 
     private fun createSymlink(link: File, target: String) {
         link.parentFile?.mkdirs()
+        val resolved = if (target.startsWith("/")) File(target)
+        else File(link.parentFile, target).canonicalFile
         try {
-            val rel = if (target.startsWith("/")) target else link.parentFile.resolve(target).canonicalPath
-            if (rel.startsWith(this.rootDir.canonicalPath)) {
-                java.nio.file.Files.createSymbolicLink(link.toPath(), File(rel).toPath())
-            }
+            java.nio.file.Files.createSymbolicLink(link.toPath(), resolved.toPath())
+            return
         } catch (e: IOException) {
-            IbbLog.w(TAG, "Could not create symlink ${link.name} -> $target", e)
+            IbbLog.w(TAG, "Symlink ${link.name} -> $target failed, copying instead", e)
         } catch (e: UnsupportedOperationException) {
             IbbLog.w(TAG, "Symlinks unsupported on this filesystem", e)
         }
+        // Android's app-private storage normally allows symlinks, but FAT-formatted external
+        // storage does not. Copying the target keeps the runtime usable either way — every symlink
+        // in an OpenJDK tarball points at a real file inside the same archive.
+        runCatching {
+            if (resolved.isFile && resolved.canonicalPath.startsWith(this.rootDir.canonicalPath)) {
+                resolved.copyTo(link, overwrite = true)
+                link.setExecutable(resolved.canExecute(), false)
+            }
+        }.onFailure { IbbLog.w(TAG, "Could not materialise ${link.name} -> $target", it) }
     }
 
     private fun isUstar(header: ByteArray): Boolean =
@@ -320,4 +330,42 @@ class RuntimeManager(
         const val TAG = "RuntimeManager"
         const val MARKER = ".ibb-runtime"
     }
+
+    /** True when [dir] (or a nested layout already flattened) holds the launcher binary. */
+    internal fun hasJavaBinary(dir: File): Boolean =
+        File(dir, "bin/java").exists() || File(dir, "bin/java.orig").exists()
+
+    /**
+     * Moves the contents of a single nested directory up one level.
+     *
+     * Archive layouts differ between JDK builds: some extract `bin/`, `lib/`, `conf/` at the root,
+     * others wrap them in one directory. Both end up usable; the second is flattened here so the
+     * rest of the launcher can assume [runtimeHome] holds `bin/java` directly.
+     */
+    /**
+     * Some archives nest everything under a single top-level directory (`jre17/`, `jdk-17.0.9/`).
+     * If exactly one such directory holds the launcher binary, treat it as the runtime root.
+     */
+    internal fun flattenForTest(root: File) {
+        val candidates = root.listFiles()
+            ?.filter { it.isDirectory }
+            ?.filter { hasJavaBinary(it) }
+            .orEmpty()
+        if (candidates.size != 1) return
+        IbbLog.i(TAG, "Runtime is nested in ${candidates.single().name}; flattening")
+        flattenIntoRoot(candidates.single(), root)
+    }
+
+    internal fun flattenIntoRoot(nested: File, root: File) {
+        for (child in nested.listFiles().orEmpty()) {
+            val destination = File(root, child.name)
+            if (destination.exists()) destination.deleteRecursively()
+            if (!child.renameTo(destination)) {
+                child.copyRecursively(destination, overwrite = true)
+                child.deleteRecursively()
+            }
+        }
+        nested.deleteRecursively()
+    }
+
 }
