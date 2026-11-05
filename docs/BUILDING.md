@@ -50,31 +50,37 @@ echo "sdk.dir=$ANDROID_HOME" > local.properties
 ./gradlew :app:assembleDebug
 ```
 
-## 3. Make it *runnable*: add the native bridge
+## 3. The native layer builds automatically
 
-A launcher-only APK builds fine with no native code, but launching Minecraft requires the JNI
-bridge. `docs/NATIVE_LAYER.md` documents the full contract; the short version:
-
-```
-app/src/main/jniLibs/arm64-v8a/libpojavexec.so
-app/src/main/jniLibs/arm64-v8a/libpojavexec_awt.so
-app/src/main/jniLibs/arm64-v8a/libexithook.so
-app/src/main/jniLibs/armeabi-v7a/…   (same three)
-app/src/main/jniLibs/x86_64/…        (same three)
-```
-
-Build them from the PojavLauncher/Amethyst `jni` tree (see the doc), or supply your own
-implementation of the same symbols. Renderer shims (`libEGL_angle.so`, `libOSMesa_zink.so`,
-`libgl4es.so`, …) go in the same folders and are selected in **Settings → Graphics → Renderer**.
-
-The optional in-repo shim (`libibbexec.so`, used only when you replace the prebuilt bridge) builds
-with:
+There is no opt-in flag: `assembleDebug` compiles the JNI bridge with ndk-build, because an APK
+without it cannot start a JVM. Two things have to be on the machine:
 
 ```bash
-./gradlew :app:assembleDebug -PwithNative=true
+export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.0.12077973   # the version pinned in app/build.gradle.kts
 ```
 
-This is deliberately opt-in: a plain `assembleDebug` must never require the NDK.
+and the prebuilt renderer/JVM libraries have to be fetched once (the folder is gitignored):
+
+```bash
+./tools/fetch_native_libs.sh          # pinned to PojavLauncher b12ad04, 10 .so per ABI
+```
+
+That gives you, per ABI:
+
+```
+app/src/main/jniLibs/<abi>/libgl4es_114.so   libOSMesa.so   liblwjgl*.so   libopenal.so
+app/build/intermediates/…/libpojavexec.so    libexithook.so  libpojavexec_awt.so   (ndk-build)
+```
+
+`app/src/main/jni/` is vendored source (GPLv3, see `NOTICE`); `app/src/main/jniLibs/` is fetched
+output. Neither the renderer libraries nor the Android runtime are stored in git — see
+`docs/NATIVE_LAYER.md` §9 for the full table of what comes from where.
+
+### Why the first build is slow
+
+ndk-build compiles every C file three times (once per ABI) and the linker runs twice per ABI
+(debug/release). Expect ~3 minutes on a clean cache, seconds afterwards. The Gradle cache in CI
+keeps it at ~100 s.
 
 ## 4. Release build
 
@@ -130,7 +136,7 @@ path/checksum handling, RAM heuristics, auth payload parsing). Anything touching
 | Build hangs at `Downloading…` | Corporate proxy; configure `gradle.properties` proxy settings. |
 | `UnsatisfiedLinkError` at launch | Missing/mismatched `.so` for the device ABI — see §3. |
 | Game boots, then exits with code 1 | Open **Console**; the launcher maps the common causes (missing runtime, wrong Java version, OOM) to a hint. |
-| Black screen after the loading card | Renderer mismatch: switch ANGLE ⇄ Zink in Settings. |
+| Black screen after the loading card | Renderer mismatch: switch GL4ES ⇄ Zink in Settings. |
 | `INSTALL_FAILED_NO_MATCHING_ABIS` | The APK lacks the device's ABI; rebuild with it enabled in `abiFilters`. |
 
 ## 7. Where things end up at runtime

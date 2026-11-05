@@ -1,4 +1,4 @@
-# IBB Launcher 1.1.0 — playable build
+# IBB Launcher 1.2.0 — playable build
 
 Package `dev.ibb.launcher` · Minimum Android 8.0 (API 26) · targetSdk 35
 Architectures: arm64-v8a, armeabi-v7a, x86_64 · Signed: APK Signature Scheme v2
@@ -8,7 +8,10 @@ Architectures: arm64-v8a, armeabi-v7a, x86_64 · Signed: APK Signature Scheme v2
 | `app-release.apk` | 67 MB | R8-minified; includes the native execution layer |
 | `app-debug.apk` | 85 MB | Unminified; readable crash logs |
 
-Download: <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.1.0>
+Download: <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.2.0>
+
+The APKs themselves are **not** committed to this repository (67–85 MB each); the release assets
+are the distribution channel.
 
 Install with `adb install -r app-release.apk`, or copy it to the phone and tap it
 (allow "install unknown apps" for the file manager).
@@ -21,8 +24,9 @@ Install with `adb install -r app-release.apk`, or copy it to the phone and tap i
 3. **Java.** The first Play tap downloads the matching runtime (~85 MB) and then the game files
    (libraries + assets, several hundred MB). Use Wi-Fi. Progress is on the Home card and in
    **Settings → Console**.
-4. **Play.** The game renders into the launcher's own surface, with the on-screen controller
-   (move stick, jump, sneak, inventory, drop, hotbar) over it.
+4. **Play.** The game renders into the launcher's own surface, with the on-screen controller over
+   it: move stick, look drag, **Attack** (left mouse — hold it to keep mining), **Use** (right
+   mouse — place, eat, open), jump, sneak, inventory, drop, hotbar scroll, chat and menu.
 
 Everything is downloaded from the official Mojang and OpenJDK-Android endpoints; nothing is
 bundled that would make the APK unreasonably large.

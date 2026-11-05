@@ -27,6 +27,13 @@ It is not affiliated with Mojang, Microsoft or PojavLauncher.
 | **UI** | 100 % Jetpack Compose, dark-first glassmorphism, 120 Hz-safe |
 | **Size** | ~18 MB APK *without* runtimes; Java runtimes download on demand (~65–95 MB each) |
 
+## The five tabs
+
+Home · Versions · Files · Account · Settings.
+
+Home is a single Play card: the account, the selected version, and one button. Everything else is
+reachable from those five destinations — there is no sixth place to look.
+
 ## Feature tour
 
 ### Dashboard
@@ -47,7 +54,8 @@ accounts are one tap and derive a deterministic UUID, so worlds keep their inven
 
 ### Skins
 Preset-based character customiser with a canvas-rendered voxel avatar (no image assets, no
-allocation churn), classic/slim model switch and a local skin library.
+allocation churn), classic/slim model switch and a local skin library. It lives under **Account**
+rather than in its own tab, which keeps the bar to the five things a player actually needs.
 
 ### Files
 Built-in explorer for the current instance: mods, resource packs, shader packs, datapacks, worlds.
@@ -56,18 +64,21 @@ Imports go through the Storage Access Framework, then the archive is sniffed
 Nothing is ever silently overwritten; disabling renames with a `.disabled` suffix.
 
 ### Console
-Live logcat-backed console with level filters, pause, copy, clear and share. Crash reports from the
-previous run are surfaced on next start with a one-tap share sheet.
+Not a tab: **Settings → Console** opens a full-screen sheet with the live JVM log (the game's own
+stdout/stderr, level filters, pause, copy, clear, share) plus logcat. It is the only useful
+diagnostic when a launch fails, so it is one tap from Settings and one tap from the in-game toolbar.
+Crash reports from the previous run are surfaced on the next start with a one-tap share sheet.
 
 ### Settings
-Renderer selection (ANGLE / Zink / VirGL / GL4ES), resolution scale, FPS cap, vsync, big-core
-affinity, RAM slider derived from *physical* RAM, JVM arguments, Java 8/17/21 runtime manager,
-controller binds, storage usage and log export.
+Renderer selection (**GL4ES** `opengles3`, **Zink/Vulkan** `vulkan_zink`, **OpenGL ES 2**
+`opengles2`), resolution scale, vsync, big-core affinity, Adreno/Turnip preference, RAM slider
+derived from *physical* RAM, JVM arguments, the Java 8/17/21 runtime manager, control-layout
+editing, storage usage, the console and log export.
 
 ### In-game
 Dedicated landscape `GameActivity` hosting a `SurfaceView` for the JVM-owned GL context, with a
-Compose overlay for the virtual controller (D-pad, joystick, macros, mouse emulation, sneak/sprint
-toggles, scale/opacity), a log peek and a session sheet — all drawn in a separate window layer so
+Compose overlay for the virtual controller (joystick, look drag, mouse buttons for **attack/use**
+with hold-to-repeat, macros, sneak/sprint toggles, scale/opacity), a log peek and a session sheet — all drawn in a separate window layer so
 the overlay never forces the game surface into software composition.
 
 ## Build it
@@ -79,9 +90,10 @@ the overlay never forces the game surface into software composition.
 export JAVA_HOME=/path/to/jdk-17
 export ANDROID_HOME=/path/to/android-sdk
 
-# 2. Native bridge (required for a runnable game — see docs/NATIVE_LAYER.md)
-#    place libpojavexec.so / libpojavexec_awt.so / libexithook.so
-#    in app/src/main/jniLibs/<abi>/
+# 2. Native side: appsrc/main/jni is compiled by ndk-build (needs the NDK, set in
+#    app/build.gradle.kts). The prebuilt renderer/JVM libraries are fetched from the
+#    pinned PojavLauncher commit into the (gitignored) app/src/main/jniLibs/:
+./tools/fetch_native_libs.sh
 
 # 3. Build
 ./gradlew :app:assembleDebug        # debug APK
@@ -154,37 +166,38 @@ See `app/src/main/assets/licenses/` for the full texts shipped inside the APK.
 
 ## Download
 
-Download the current build:
+* **Release APK (67 MB, R8-minified)** —
+  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.2.0/app-release.apk>
+* **Debug APK (85 MB, readable logs)** —
+  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.2.0/app-debug.apk>
+* Checksums and notes: [v1.2.0 release](https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.2.0)
 
-* **Release APK (3.7 MB, R8-minified)** —
-  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.0.1/app-release.apk>
-* **Debug APK (21 MB, readable logs)** —
-  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.0.1/app-debug.apk>
-* Checksums: [v1.0.1 release notes](https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.0.1)
-
-The same two files sit in `artifacts/` in this checkout (with `SHA256SUMS.txt`), and every push is
-rebuilt by `.github/workflows/build-apk.yml`; pushing a `v*` tag publishes a new release.
+Every push is rebuilt by `.github/workflows/build-apk.yml`; pushing a `v*` tag publishes a new
+release with both APKs attached.
 
 | File | Size | Install |
 |---|---|---|
-| `app-release.apk` | 3.7 MB | `adb install -r app-release.apk` |
-| `app-debug.apk` | 21 MB, no shrinking | same; distinct package id `dev.ibb.launcher.debug` |
+| `app-release.apk` | 67 MB | `adb install -r app-release.apk` |
+| `app-debug.apk` | 85 MB, no shrinking | same |
 
-Minimum Android 8.0 (API 26). Arm64, armv7 and x86_64 are all in the one APK.
+Minimum Android 8.0 (API 26). Arm64, armv7 and x86_64 are all in the one APK. The APKs are signed
+with a stable key, so they upgrade over an earlier install without losing data.
 
-### What runs today, and what does not
+### What is in the APK
 
-The launcher itself — version catalogue, Microsoft device-code sign-in, downloads and asset
-verification, mod/resource-pack/shader/world management, per-version settings, on-screen control
-editor, console — is complete and installs and runs from these APKs.
+Everything needed to boot Minecraft is packaged: `libpojavexec.so` (the JVM launcher and JNI
+bridge), `libexithook.so`, `libgl4es_114.so`, `libOSMesa.so`, the `liblwjgl*` natives, `libopenal.so`
+and `assets/components/lwjgl3/glfw-stub.jar`. The 1.0.x builds were ~4 MB precisely because none of
+that was present, which is why they could not launch a game.
 
-Actually **booting Minecraft** additionally needs the native execution layer, which is a separate
-build and is *not* in these APKs:
+Still fetched on first use, because they are version- and account-specific: the Android Java
+runtime matching the game (Java 8 / 17 / 21) and Mojang's libraries and assets.
 
-* `libpojavexec.so` + `libexithook.so` — build with `./gradlew :app:assembleDebug -PwithNative`
-  on a machine with the NDK/CMake for the PojavLauncher-derived `pojavexec` sources;
-* `glfw-stub.jar` and an Android JRE 8/17 image, installed from **Settings → Optional components**
-  and **Settings → Runtimes**.
+### Known limits
 
-Without them the launch path reports "native bridge unavailable" in the console instead of
-crashing — see [docs/NATIVE_LAYER.md](docs/NATIVE_LAYER.md).
+* No Redstone-adjacent exotica: OptiFine and shader mods work, but only through their supported
+  backends; Zink needs a Vulkan 1.1 driver.
+* AWT-based screens (some old Forge installers) are the least-tested path — modern versions render
+  through GLFW and never load AWT.
+* Physical gamepads and keyboards map through the same bridge as the touch overlay, but the touch
+  layouts are what is exercised by the tests.

@@ -5,10 +5,12 @@ process* is native code. This document is the contract between the two halves: t
 the JNI classes they belong to, the order they must be called in, and how the `.so` files get into
 the APK.
 
-> **Scope.** IBB Launcher ships **no** `.so` files in this repository. The bridge is
-> PojavLauncher/Amethyst GPLv3 code; bundling it makes your APK a GPLv3 derivative, so it is left
-> as an explicit build step (see §5). Without it the launcher still installs, browses versions,
-> manages accounts and provisions runtimes — only "Play" reports a readable error.
+> **Scope.** The bridge is PojavLauncher GPLv3 code, so it is vendored as source
+> (`app/src/main/jni/`, see `NOTICE`) and the APK built from this tree is a GPLv3 derivative.
+> It **is** compiled into the release APKs — `libpojavexec.so`, `libexithook.so`,
+> `libpojavexec_awt.so` are built from source by ndk-build on every CI run, alongside the prebuilt
+> renderer/JVM libraries fetched by `tools/fetch_native_libs.sh` (see §5). A build without them
+> installs and browses, but "Play" cannot boot a JVM.
 
 ## 1. Why a JVM can run in an Android app at all
 
@@ -20,7 +22,7 @@ Android apps run in the ART runtime, not a JVM. Two things make Java Edition pos
    UI in the same process.
 2. **A desktop graphics stack faked convincingly.** Minecraft links against LWJGL 3 → GLFW +
    OpenGL 3.3. On Android we provide an `org.lwjgl.glfw.GLFW` implementation (see §4) that talks to
-   `ANativeWindow`/`EGL`, plus an OpenGL translator (ANGLE, Zink, VirGL or GL4ES) that maps GL 3.3
+   `ANativeWindow`/`EGL`, plus an OpenGL translator (gl4es or Zink/OSMesa) that maps GL 3.3
    onto GLES 3.x or Vulkan.
 
 ## 2. Classes that are frozen ABI
@@ -29,12 +31,25 @@ JNI resolves `native` methods by **mangled class name**. Rename any of these and
 runtime with `UnsatisfiedLinkError` — usually from a background thread, with a stack trace that
 points nowhere near the cause.
 
-| Kotlin class | Purpose | Symbols (from upstream) |
+| Kotlin class | Purpose | Symbols actually exported by the `.so` |
 |---|---|---|
-| `com.oracle.dalvik.VMLauncher` | starts the JVM, blocks until exit | `Java_com_oracle_dalvik_VMLauncher_launchJVM([Ljava/lang/String;)I` |
-| `net.kdt.pojavlaunch.utils.JREUtils` | process & bridge control | `chdir`, `dlopen`, `setLdLibraryPath`, `setupBridgeWindow`, `releaseBridgeWindow`, `initializeHooks`, `setupExitMethod`, `renderAWTScreenFrame` |
-| `org.lwjgl.glfw.CallbackBridge` | input, window size, exit requests | `nativeSendKeyEvent`, `nativeMouseButton`, `nativeCursorPos`, `nativeScroll`, `nativeChar`, `nativeSetGrabbing`, `nativeSetInputReady`, `nativeSetWindowSize`, `nativeNotifyLauncher` |
-| `org.lwjgl.glfw.GLFW` | GLFW entry points the game links against | `glfwInit`, `glfwTerminate`, `glfwPollEvents`, `glfwSwapBuffers`, `glfwSetInputMode`, `glfwGetKey`, `glfwGetWindowSize`, `glfwSetWindowTitle` |
+| `com.oracle.dalvik.VMLauncher` | starts the JVM, blocks until exit | `Java_com_oracle_dalvik_VMLauncher_launchJVM` |
+| `net.kdt.pojavlaunch.utils.JREUtils` | process & bridge control | `chdir`, `dlopen`, `executeBinary`, `setLdLibraryPath`, `setupBridgeWindow`, `releaseBridgeWindow`, `initializeHooks`, `setupExitMethod`, `renderAWTScreenFrame` |
+| `org.lwjgl.glfw.CallbackBridge` | input, window size, clipboard | `RegisterNatives` in `JNI_OnLoad` supplies `nativeSendChar`, `nativeSendCharMods`, `nativeSendKey`, `nativeSendCursorPos`, `nativeSendMouseButton`, `nativeSendScroll`, `nativeSendScreenSize`, `nativeSetUseInputStackQueue`; direct exports: `nativeSetInputReady`, `nativeSetGrabbing`, `nativeClipboard`, `nativeSetWindowAttrib`, `nativeCreateGamepad{Button,Axis}Buffer` |
+| `org.lwjgl.glfw.GLFW` | GLFW entry points the game links against | `nglfwSet*Callback`, `nglfwGetCursorPos`, `internalGetGamepadDataPointer` |
+| `net.kdt.pojavlaunch.Logger` | the game JVM's stdout/stderr | `begin`, `appendToLog`, `setLogListener` |
+| `net.kdt.pojavlaunch.MainActivity` | AWT/Cacio bridge only | `net.java.openjdk.cacio.ctc.CTCDesktopPeer_openUri/openFile`, `CTCClipboard_nQuerySystemClipboard/nPutClipboardData` call these statics |
+| `net.kdt.pojavlaunch.CriticalNativeTest` | probe for `@CriticalNative` support | `testCriticalNative(II)V` registered then unregistered during `JNI_OnLoad` |
+
+Two of these are easy to get wrong, and both were bugs in this tree:
+
+* `Logger` may not declare both `begin(File, listener)` and `external fun begin(String)` — a JVM can
+  only tell them apart by arity, and the native side binds the one-argument form. Setup therefore
+  lives in `Logger.start(logFile, listener)`.
+* `CallbackBridge.nativeSendKey` is bound by `RegisterNatives`, *not* by its mangled name, and the
+  registration replaces whatever the class declared. The declarations therefore carry no
+  `@CriticalNative` annotation: the native side probes the device and registers either the critical
+  (no `JNIEnv`/`jclass`) or the regular variant.
 
 The Kotlin declarations carry `@JvmStatic`; on an `object` that produces a **static** native
 method, which is what the C side expects (`JNIEnv *env, jclass clazz, …`).
@@ -58,10 +73,25 @@ ExecutionLayer.setLibraryPath(runtimeHome)   LD_LIBRARY_PATH = lib:lib/server:li
 ExecutionLayer.preloadJvm(runtimeHome)       dlopen libjli, libjvm, libjava, libnet, libnio, libzip …
 ExecutionLayer.chdir(instanceDir)            the JVM resolves java.home relative to the CWD
 ExecutionLayer.initializeHooks()             signal handlers, /proc/self/maps shims, stdio
+ExecutionLayer.loadRenderer(nativeLibDir, "libgl4es_114.so" | "libOSMesa.so")
+GameLogSink.attach(versionDir/logs/latest.log)  Logger.begin + listener, before stdio is redirected
+ExecutionLayer.attachSurface(surface)        setupBridgeWindow(ANativeWindow)
 ExecutionLayer.setupExitHandler(context)     System.exit → launcher callback
-ExecutionLayer.loadRenderer(nativeLibDir, "libglxshim.so" | "libEGL_angle.so" | …)
-GameSurfaceHost → ExecutionLayer.attachSurface(surface)   setupBridgeWindow(ANativeWindow)
 com.oracle.dalvik.VMLauncher.launchJVM(argv)  ← blocks on IBB-GameThread
+
+The environment is exported *before* the renderer loads, because the game JVM is created by
+`JLI_Launch` and inherits this process's environment:
+POJAV_ENVIRON (the shared struct pointer), POJAV_NATIVEDIR, LD_LIBRARY_PATH, POJAV_RENDERER,
+LIBGL_NAME, LIBGL_ES, FORCE_VSYNC, MESA_GLSL_CACHE_DIR and the Zink/Turnip overrides.
+
+`POJAV_ENVIRON` is the subtle one. `environ.c` has an `__attribute__((constructor))` that either
+creates the struct and publishes its **address as a hex string**, or re-attaches to the address it
+finds there. It runs again when the *game JVM* opens `libpojavexec.so` for `GLFW`'s static
+initialiser; if the variable were missing the second run would allocate a second struct and the two
+sides would silently disagree about the surface, the input buffers and the renderer. That is why the
+launcher must not clear the environment, and why `NativeLibraryPath.prepare()` exports
+`POJAV_NATIVEDIR` rather than reloading the library under a different path.
+```
 ```
 
 Why each step exists:
@@ -162,8 +192,8 @@ adb logcat -s IBB:* jrelog:* AndroidRuntime:E DEBUG:* libc:*
 | `JREUtils: Native bridge unavailable` | `.so` missing for this ABI — check `adb shell ls $APP/lib` |
 | `UnsatisfiedLinkError: No implementation found for …VMLauncher…` | class was renamed or ProGuard stripped it |
 | `ExecutionLayer: Could not load libjvm.so` | runtime incomplete — delete it in Settings, reinstall |
-| `jrelog: …Failed to create EGL context` | renderer/GPU mismatch — switch ANGLE ⇄ Zink |
-| exit code 1 with no stack trace | typically OOM or a mixin failure — read the Console tab, not logcat |
+| `jrelog: …Failed to create EGL context` | renderer/GPU mismatch — switch GL4ES ⇄ Zink |
+| exit code 1 with no stack trace | typically OOM or a mixin failure — read Settings → Console, not logcat |
 | black surface, game "running" | surface attached after launch, or virtual size ≠ surface size |
 
 ## 8. Threading rules
@@ -174,3 +204,15 @@ adb logcat -s IBB:* jrelog:* AndroidRuntime:E DEBUG:* libc:*
 - `CallbackBridge` input calls come from the Compose pointer thread; the native side queues them
   into the GLFW event loop.
 - `ConsoleStreamer` reads logcat on its own daemon thread and pipes entries into `IbbLog`.
+
+## 9. How the `.so` files get into the APK
+
+| Library | Where it comes from |
+|---|---|
+| `libpojavexec.so`, `libexithook.so`, `libpojavexec_awt.so`, `liblinkerhook.so`, `libawt_*.so` | compiled from `app/src/main/jni/` by ndk-build (`android.ndkVersion` in `app/build.gradle.kts`) |
+| `libgl4es_114.so`, `libOSMesa.so`, `liblwjgl*.so`, `libopenal.so` | `tools/fetch_native_libs.sh`, pinned to PojavLauncher `b12ad04`; `app/src/main/jniLibs/` is gitignored |
+| `glfw-stub.jar` | vendored in `app/src/main/assets/components/lwjgl3/`, extracted at runtime |
+
+`app/src/main/assets/components/lwjgl3/glfw-stub.jar` **must stay first on the game's classpath**:
+it is the real LWJGL/GLFW implementation for Android, and `org.lwjgl.glfw.GLFW` in this source tree is
+only the launcher-side stub used while the jar is not loaded.
