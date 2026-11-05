@@ -30,6 +30,54 @@ class ControlEngineTest {
         keys = listOf(32),
     )
 
+
+    // ------------------------------------------------------------------ playability
+
+    /**
+     * A layout the player cannot mine with is not playable.
+     *
+     * Minecraft reads attack/use through `glfwGetMouseButton`, never through a key binding, so
+     * every shipped layout must carry a left- and a right-button control. This is the regression
+     * test for the build that could walk but not break a block.
+     */
+    @Test
+    fun `every default layout can attack and use`() {
+        val layouts = listOf(
+            "classic" to DefaultLayouts.classic(),
+            "leftHanded" to DefaultLayouts.leftHanded(),
+            "compact" to DefaultLayouts.compact(),
+        )
+        for ((name, layout) in layouts) {
+            val buttons = layout.controls.mapNotNull { it.mouseButton }.toSet()
+            assertTrue("$name has no left-click (attack) control", 0 in buttons)
+            assertTrue("$name has no right-click (use) control", 1 in buttons)
+        }
+    }
+
+    /** Mouse-button controls must repeat, otherwise a held finger mines exactly one block. */
+    @Test
+    fun `mouse button controls repeat while held`() {
+        val attack = DefaultLayouts.classic().controls.first { it.mouseButton == 0 }
+        assertTrue("attack does not repeat", attack.holdIntervalMs > 0)
+    }
+
+    /**
+     * The whole button, not just its centre, must be on screen — a mirrored layout that pushes
+     * half of "Attack" past the edge leaves the player unable to mine.
+     */
+    @Test
+    fun `attack and use fit inside the viewport in every mirrored layout`() {
+        val layouts = listOf(DefaultLayouts.classic(), DefaultLayouts.leftHanded(), DefaultLayouts.compact())
+        for (layout in layouts) {
+            for (spec in layout.controls.filter { it.mouseButton != null }) {
+                val left = spec.x - spec.width / 2f
+                val right = spec.x + spec.width / 2f
+                assertTrue("${layout.name}: ${spec.label} starts off screen ($left)", left >= 0f)
+                assertTrue("${layout.name}: ${spec.label} runs off screen ($right)", right <= 1f)
+            }
+        }
+    }
+
     // ------------------------------------------------------------------ hit testing
 
     @Test
