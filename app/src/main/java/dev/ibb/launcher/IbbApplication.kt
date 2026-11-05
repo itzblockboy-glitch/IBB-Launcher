@@ -57,6 +57,8 @@ class IbbApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        // The AWT/Cacio bridge resolves net.kdt.pojavlaunch.MainActivity statically.
+        net.kdt.pojavlaunch.MainActivity.attach(this)
         CrashHandler.install(this)
         IbbLog.i(TAG, "IBB Launcher starting on ${Build.MANUFACTURER} ${Build.MODEL} (API ${Build.VERSION.SDK_INT})")
         createNotificationChannels()

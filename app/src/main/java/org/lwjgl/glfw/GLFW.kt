@@ -59,4 +59,28 @@ object GLFW {
     const val SCANCODE_Q = 16
     const val SCANCODE_F1 = 59
     const val SCANCODE_F5 = 63
+
+    /**
+     * Called **by the native layer** when the surface is resized or the monitor geometry changes
+     * (`input_bridge_v3.c` looks this up on the class that ends up on the game's classpath).
+     *
+     * The real implementation lives in `glfw-stub.jar`; this is the no-op used by launcher-side code
+     * when the jar is not on the classpath (for example while previewing the UI).
+     */
+    @JvmStatic
+    fun internalWindowSizeChanged(window: Long) {
+        // Intentionally empty: the stub handles the resize.
+    }
+
+    /** See [internalWindowSizeChanged]. */
+    @JvmStatic
+    fun internalChangeMonitorSize(width: Int, height: Int) {
+        // Intentionally empty: the stub handles the resize.
+    }
+
+    /** See [internalWindowSizeChanged]. */
+    @JvmStatic
+    fun glfwSetWindowAttrib(window: Long, attrib: Int, value: Int) {
+        // Intentionally empty: the stub applies window attributes.
+    }
 }
