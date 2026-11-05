@@ -5,7 +5,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.tukaani.xz.XZOutputStream
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.file.Files
@@ -81,21 +81,10 @@ class RuntimeExtractionTest {
         return out.toByteArray()
     }
 
-    private fun writeXz(entries: List<TarEntry>): File {
+    /** Extracts a synthetic archive the way [RuntimeManager.install] does after decompression. */
+    private fun extract(entries: List<TarEntry>, target: File) {
         val tar: ByteArray = buildTar(entries)
-        val file = File(temp, "runtime.tar.xz")
-        val raw = file.outputStream()
-        try {
-            val xz = XZOutputStream(raw)
-            try {
-                xz.write(tar)
-            } finally {
-                xz.close()
-            }
-        } finally {
-            raw.close()
-        }
-        return file
+        manager(temp).untar(ByteArrayInputStream(tar), target)
     }
 
     private fun manager(dir: File) = RuntimeManager(dir, RuntimeManager.AndroidArch.ARM64)
@@ -104,7 +93,9 @@ class RuntimeExtractionTest {
 
     @Test
     fun `flat layout extracts bin java and lib`() {
-        val archive = writeXz(
+        val target = File(temp, "runtimes/jre-17-arm64").apply { mkdirs() }
+
+        extract(
             listOf(
                 TarEntry("bin/"),
                 TarEntry("bin/java", "#!/bin/sh\nexec java.real".toByteArray()),
@@ -112,10 +103,8 @@ class RuntimeExtractionTest {
                 TarEntry("lib/server/"),
                 TarEntry("lib/server/libjvm.so", ByteArray(2048) { it.toByte() }),
             ),
+            target,
         )
-        val target = File(temp, "runtimes/jre-17-arm64").apply { mkdirs() }
-
-        manager(temp).extractTarXz(archive, target)
 
         assertTrue("bin/java missing", File(target, "bin/java").exists())
         assertEquals(
@@ -128,10 +117,9 @@ class RuntimeExtractionTest {
     @Test
     fun `binary payload larger than one tar block survives`() {
         val payload = ByteArray(5000) { (it % 251).toByte() }
-        val archive = writeXz(listOf(TarEntry("bin/java", payload)))
         val target = File(temp, "out").apply { mkdirs() }
 
-        manager(temp).extractTarXz(archive, target)
+        extract(listOf(TarEntry("bin/java", payload)), target)
 
         assertTrue(File(target, "bin/java").readBytes().contentEquals(payload))
     }
@@ -139,15 +127,15 @@ class RuntimeExtractionTest {
     @Test
     fun `symlinked bin java is materialised`() {
         assumeTrue("filesystem cannot create symlinks", canSymlink())
-        val archive = writeXz(
+        val target = File(temp, "out").apply { mkdirs() }
+
+        extract(
             listOf(
                 TarEntry("lib/jexec", "binary".toByteArray()),
                 TarEntry("bin/java", type = '2', linkTarget = "../lib/jexec"),
             ),
+            target,
         )
-        val target = File(temp, "out").apply { mkdirs() }
-
-        manager(temp).extractTarXz(archive, target)
 
         val java = File(target, "bin/java")
         assertTrue("bin/java was not created", java.exists() || Files.isSymbolicLink(java.toPath()))
@@ -160,10 +148,10 @@ class RuntimeExtractionTest {
 
     @Test
     fun `path traversal entries are rejected`() {
-        val archive = writeXz(listOf(TarEntry("../escaped.txt", "nope".toByteArray())))
         val target = File(temp, "out").apply { mkdirs() }
 
-        val thrown = runCatching { manager(temp).extractTarXz(archive, target) }.exceptionOrNull()
+        val thrown = runCatching { extract(listOf(TarEntry("../escaped.txt", "nope".toByteArray())), target) }
+            .exceptionOrNull()
 
         assertTrue("a traversal entry must throw, got $thrown", thrown != null)
         assertTrue("file escaped the target", !File(temp, "escaped.txt").exists())

@@ -179,7 +179,8 @@ class RuntimeManager(
         }
     }
 
-    private fun untar(input: InputStream, target: File) {
+    /** Unpacks an uncompressed tar stream. Split out from [extractTarXz] so it can be tested. */
+    internal fun untar(input: InputStream, target: File) {
         val header = ByteArray(512)
         var longName: String? = null
         while (true) {
