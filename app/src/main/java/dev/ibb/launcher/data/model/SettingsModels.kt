@@ -35,7 +35,18 @@ enum class Renderer(
     ;
 
     companion object {
-        fun fromId(id: String?): Renderer = entries.firstOrNull { it.id == id } ?: GL4ES
+        /**
+         * Resolves a stored preference. Older builds saved shorter aliases (`zink`, `angle`,
+         * `gl4es`) and installs may carry them across an upgrade, so they are mapped rather than
+         * silently reset to the default.
+         */
+        fun fromId(id: String?): Renderer = when (id) {
+            null, "" -> GL4ES
+            "zink", "vulkan_zink" -> ZINK_VULKAN
+            "angle", "opengles3" -> GL4ES
+            "gl4es", "opengles2" -> entries.firstOrNull { it.id == id } ?: GL4ES
+            else -> entries.firstOrNull { it.id == id } ?: GL4ES
+        }
     }
 }
 

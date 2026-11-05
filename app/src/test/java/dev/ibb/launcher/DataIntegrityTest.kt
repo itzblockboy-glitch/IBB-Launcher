@@ -185,7 +185,9 @@ class DataIntegrityTest {
 
     @Test
     fun `unknown renderer ids fall back to the compatible default`() {
-        assertEquals(Renderer.ANGLE_GLES, Renderer.fromId("nonsense"))
+        assertEquals(Renderer.GL4ES, Renderer.fromId("nonsense"))
+        // `/zink` is what every existing install has stored; it must keep resolving.
+        assertEquals(Renderer.ZINK_VULKAN, Renderer.fromId("vulkan_zink"))
         assertEquals(Renderer.ZINK_VULKAN, Renderer.fromId("zink"))
     }
 
