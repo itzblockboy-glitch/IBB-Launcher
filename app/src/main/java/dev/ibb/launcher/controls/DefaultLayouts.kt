@@ -44,6 +44,19 @@ object DefaultLayouts {
                 width = 0.55f, height = 0.75f, opacity = 0.0f,
                 visibility = ControlVisibility.IN_GAME_ONLY,
             ),
+            // Attack/Use are mouse buttons, not key codes: Minecraft reads glfwGetMouseButton for
+            // block breaking and item use. holdIntervalMs repeats the click so a finger held down
+            // keeps mining, the way a held mouse button does on desktop.
+            ControlSpec(
+                type = ControlType.MOUSE_BUTTON, label = "Attack", x = 0.845f, y = 0.575f,
+                width = 0.105f, height = 0.125f, opacity = 0.55f,
+                mouseButton = 0, holdIntervalMs = 120,
+            ),
+            ControlSpec(
+                type = ControlType.MOUSE_BUTTON, label = "Use", x = 0.735f, y = 0.575f,
+                width = 0.095f, height = 0.115f, opacity = 0.55f,
+                mouseButton = 1, holdIntervalMs = 200,
+            ),
             ControlSpec(
                 type = ControlType.BUTTON, label = "Jump", x = 0.885f, y = 0.74f,
                 width = 0.10f, height = 0.12f, keys = listOf(KEY_SPACE), opacity = 0.5f,
@@ -120,6 +133,16 @@ object DefaultLayouts {
                 type = ControlType.JOYSTICK, label = "Move", x = 0.16f, y = 0.72f,
                 width = 0.28f, height = 0.34f, opacity = 0.4f,
                 joystickForward = KEY_W, joystickLeft = KEY_A, joystickBack = KEY_S, joystickRight = KEY_D,
+            ),
+            ControlSpec(
+                type = ControlType.MOUSE_BUTTON, label = "Attack", x = 0.845f, y = 0.585f,
+                width = 0.13f, height = 0.15f, opacity = 0.5f,
+                mouseButton = 0, holdIntervalMs = 120,
+            ),
+            ControlSpec(
+                type = ControlType.MOUSE_BUTTON, label = "Use", x = 0.70f, y = 0.63f,
+                width = 0.11f, height = 0.13f, opacity = 0.5f,
+                mouseButton = 1, holdIntervalMs = 200,
             ),
             ControlSpec(
                 type = ControlType.BUTTON, label = "Jump", x = 0.80f, y = 0.80f,

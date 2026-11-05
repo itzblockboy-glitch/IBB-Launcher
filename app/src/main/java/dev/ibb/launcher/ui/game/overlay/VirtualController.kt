@@ -120,8 +120,10 @@ fun VirtualController(
                                 } else {
                                     val previous = activePointers.remove(id) ?: continue
                                     val spec = previous.spec ?: continue
+                                    CallbackBridge.stopRepeat(spec.mouseButton)
                                     when (spec.type) {
                                         ControlType.JOYSTICK -> releaseMovement(spec, toggled)
+                                        ControlType.MOUSE_BUTTON,
                                         ControlType.BUTTON,
                                         ControlType.FLY_UP,
                                         ControlType.FLY_DOWN,
@@ -181,6 +183,18 @@ private data class ActivePointer(
 )
 
 private fun pressControl(spec: ControlSpec, toggled: MutableMap<String, Boolean>) {
+    // Mouse-button controls bypass the key table entirely: attack/use are polled by the game
+    // through glfwGetMouseButton, so only a real button event can mine or place a block.
+    spec.mouseButton?.let { button ->
+        CallbackBridge.sendMouseButton(button, true)
+        toggled[spec.id] = true
+        if (spec.holdIntervalMs > 0) {
+            CallbackBridge.repeatMouseClick(button, spec.holdIntervalMs) {
+                toggled[spec.id] == true
+            }
+        }
+        return
+    }
     if (spec.toggle) {
         val now = !(toggled[spec.id] ?: false)
         toggled[spec.id] = now
@@ -195,9 +209,14 @@ private fun pressControl(spec: ControlSpec, toggled: MutableMap<String, Boolean>
 }
 
 private fun releaseControl(spec: ControlSpec) {
+    spec.mouseButton?.let { button ->
+        CallbackBridge.sendMouseButton(button, false)
+        return
+    }
     if (spec.toggle) return
     spec.keys.forEach { CallbackBridge.sendKey(it, false) }
 }
+
 
 private fun releaseMovement(spec: ControlSpec, toggled: MutableMap<String, Boolean>) {
     // The joystick emits movement keys per frame; releasing clears any that are held.

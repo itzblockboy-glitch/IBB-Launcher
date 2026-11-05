@@ -47,6 +47,16 @@ data class ControlSpec(
     val macroKeys: List<Int> = emptyList(),
     val toggle: Boolean = false,
     val swipeable: Boolean = false,
+    /**
+     * Mouse button driven by this control, if any (0 = left/attack, 1 = right/use).
+     *
+     * Minecraft has no key binding for attacking or using an item — it reads `glfwGetMouseButton`
+     * — so a control that only sends a key code can never mine a block or place one. When this is
+     * set the control emits a real GLFW mouse-button event instead, and [holdIntervalMs] > 0 makes
+     * it repeat while the finger stays down (hold-to-mine).
+     */
+    val mouseButton: Int? = null,
+    val holdIntervalMs: Long = 0,
     /** For joysticks: which axes they emulate. */
     val joystickForward: Int = 87,   // W
     val joystickLeft: Int = 65,      // A
@@ -56,7 +66,17 @@ data class ControlSpec(
 )
 
 @Serializable
-enum class ControlType { BUTTON, JOYSTICK, MOUSE_AREA, SCROLL_WHEEL, MACRO, SNEAK_TOGGLE, FLY_UP, FLY_DOWN, SPRINT_LOCK }
+enum class ControlType {
+    BUTTON, JOYSTICK, MOUSE_AREA, SCROLL_WHEEL, MACRO, SNEAK_TOGGLE, FLY_UP, FLY_DOWN, SPRINT_LOCK,
+
+    /**
+     * A button that drives a real mouse button (see [ControlSpec.mouseButton]).
+     *
+     * Attack/use cannot be expressed as key codes, so these are distinct from [BUTTON] and are
+     * dispatched through `CallbackBridge.sendMouseButton`.
+     */
+    MOUSE_BUTTON,
+}
 
 @Serializable
 enum class ControlVisibility { ALWAYS, IN_GAME_ONLY, MENU_ONLY }

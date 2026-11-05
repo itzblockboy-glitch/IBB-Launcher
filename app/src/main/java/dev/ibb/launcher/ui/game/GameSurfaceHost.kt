@@ -134,6 +134,8 @@ fun GameSurfaceHost(
     DisposableEffect(Unit) {
         streamer.startLogcat()
         onDispose {
+            // A hold-to-repeat worker would otherwise keep clicking into a dead surface.
+            org.lwjgl.glfw.CallbackBridge.stopAllRepeats()
             streamer.stop()
             scope.coroutineContext[kotlinx.coroutines.Job]?.cancel()
         }

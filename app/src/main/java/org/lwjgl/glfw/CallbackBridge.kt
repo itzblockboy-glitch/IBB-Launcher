@@ -112,6 +112,49 @@ object CallbackBridge {
 
     fun sendScroll(delta: Double) = nativeSendScroll(0.0, delta)
 
+    // ------------------------------------------------------------------------------------
+    // Hold-to-repeat (mining / placing)
+    // ------------------------------------------------------------------------------------
+
+    /**
+     * Re-clicks [button] every [intervalMs] while [isHeld] returns true.
+     *
+     * Vanilla samples the mouse button once per tick: a down/up pair destroys or places exactly one
+     * block. On desktop the button simply stays down; a touchscreen has no such state, so the press
+     * is repeated on a timer. Only one repeater runs per button.
+     */
+    fun repeatMouseClick(button: Int, intervalMs: Long, isHeld: () -> Boolean) {
+        stopRepeat(button, clickBeforeStop = false)
+        val worker = Thread({
+            while (isHeld()) {
+                try {
+                    Thread.sleep(intervalMs)
+                } catch (_: InterruptedException) {
+                    return@Thread
+                }
+                if (!isHeld()) break
+                nativeSendMouseButton(button, 0, 0)
+                nativeSendMouseButton(button, 1, 0)
+            }
+        }, "IBB-HoldRepeat-$button").apply { isDaemon = true }
+        repeaters[button] = worker
+        worker.start()
+    }
+
+    /** Stops the repeater for [button] and releases it. Safe to call when none is running. */
+    fun stopRepeat(button: Int?, clickBeforeStop: Boolean = false) {
+        button ?: return
+        repeaters.remove(button)?.interrupt()
+        if (clickBeforeStop) nativeSendMouseButton(button, 0, 0)
+    }
+
+    /** Stops every repeater; called when the session ends or the overlay is torn down. */
+    fun stopAllRepeats() {
+        repeaters.keys.toList().forEach { stopRepeat(it, clickBeforeStop = false) }
+    }
+
+    private val repeaters = java.util.concurrent.ConcurrentHashMap<Int, Thread>()
+
     fun sendChar(char: Int) {
         nativeSendChar(char.toChar())
     }
