@@ -117,7 +117,9 @@ JNIEXPORT jintArray JNICALL Java_net_kdt_pojavlaunch_utils_JREUtils_renderAWTScr
     androidRgbArray = (*env)->NewIntArray(env, arrayLength);
     (*env)->SetIntArrayRegion(env, androidRgbArray, 0, arrayLength, rgbArray);
 
-    (*runtimeJNIEnvPtr_GRAPHICS)->ReleaseIntArrayElements(runtimeJNIEnvPtr_GRAPHICS, jreRgbArray, rgbArray, NULL);
+    // The mode argument is a jint (0 == JNI_COMMIT semantics for the copy we already made), not a
+    // pointer: upstream passes NULL here, which NDK 27 rejects as an int-conversion error on 64-bit.
+    (*runtimeJNIEnvPtr_GRAPHICS)->ReleaseIntArrayElements(runtimeJNIEnvPtr_GRAPHICS, jreRgbArray, rgbArray, 0);
     // (*env)->DeleteLocalRef(env, androidRgbArray);
     // free(rgbArray);
     

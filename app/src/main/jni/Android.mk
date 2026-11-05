@@ -1,6 +1,17 @@
 LOCAL_PATH := $(call my-dir)
 HERE_PATH := $(LOCAL_PATH)
 
+# ---------------------------------------------------------------------------------------------
+# These are the upstream PojavLauncher C sources, built against a newer NDK (27) than they were
+# written for. NDK 27 promotes several diagnostics to errors that were warnings upstream (notably
+# int-conversion on 64-bit, e.g. passing NULL where a jint mode is expected). The code is correct
+# in the cases that matter, so keep the build reproducible by relaxing exactly those diagnostics
+# for the vendored first-party sources instead of patching every call site.
+# ---------------------------------------------------------------------------------------------
+VENDOR_CFLAGS := -Wno-int-conversion -Wno-incompatible-pointer-types \
+                 -Wno-implicit-function-declaration -Wno-int-to-pointer-cast \
+                 -Wno-pointer-to-int-cast -Wno-deprecated-non-prototype
+
 # include $(HERE_PATH)/crash_dump/libbase/Android.mk
 # include $(HERE_PATH)/crash_dump/libbacktrace/Android.mk
 # include $(HERE_PATH)/crash_dump/debuggerd/Android.mk
@@ -16,6 +27,7 @@ include $(CLEAR_VARS)
 LOCAL_LDLIBS := -ldl -llog -landroid
 # -lGLESv2
 LOCAL_MODULE := pojavexec
+LOCAL_CFLAGS += $(VENDOR_CFLAGS)
 LOCAL_LDFLAGS += -Wl,-z,max-page-size=16384
 # LOCAL_CFLAGS += -DDEBUG
 # -DGLES_TEST
@@ -45,6 +57,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := exithook
+LOCAL_CFLAGS += $(VENDOR_CFLAGS)
 LOCAL_LDLIBS := -ldl -llog
 LOCAL_LDFLAGS += -Wl,-z,max-page-size=16384
 LOCAL_SHARED_LIBRARIES := bytehook pojavexec
@@ -56,6 +69,7 @@ include $(BUILD_SHARED_LIBRARY)
 #ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 include $(CLEAR_VARS)
 LOCAL_MODULE := linkerhook
+LOCAL_CFLAGS += $(VENDOR_CFLAGS)
 LOCAL_SRC_FILES := driver_helper/hook.c
 LOCAL_LDFLAGS := -z global
 include $(BUILD_SHARED_LIBRARY)
@@ -63,6 +77,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := pojavexec_awt
+LOCAL_CFLAGS += $(VENDOR_CFLAGS)
 LOCAL_LDFLAGS += -Wl,-z,max-page-size=16384
 LOCAL_SRC_FILES := \
     awt_bridge.c
@@ -77,12 +92,14 @@ include $(BUILD_SHARED_LIBRARY)
 # fake lib for linker
 include $(CLEAR_VARS)
 LOCAL_MODULE := awt_headless
+LOCAL_CFLAGS += $(VENDOR_CFLAGS)
 include $(BUILD_SHARED_LIBRARY)
 
 # libawt_xawt without X11, used to get Caciocavallo working
 LOCAL_PATH := $(HERE_PATH)/awt_xawt
 include $(CLEAR_VARS)
 LOCAL_MODULE := awt_xawt
+LOCAL_CFLAGS += $(VENDOR_CFLAGS)
 # LOCAL_CFLAGS += -DHEADLESS
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_SHARED_LIBRARIES := awt_headless
