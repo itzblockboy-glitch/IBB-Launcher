@@ -234,6 +234,10 @@ class RuntimeManager(
 
     private fun createSymlink(link: File, target: String) {
         link.parentFile?.mkdirs()
+        // Absolute targets are used as-is; relative ones are resolved against the link's own
+        // directory, then written as an absolute link. Keeping the relative form would be more
+        // faithful, but a JRE tarball's links are all internal, and absolute links cannot break
+        // when a parent directory is renamed or when the runtime is moved between app versions.
         val resolved = if (target.startsWith("/")) File(target)
         else File(link.parentFile, target).canonicalFile
         try {

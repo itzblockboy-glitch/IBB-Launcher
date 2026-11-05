@@ -127,7 +127,7 @@ class RuntimeExtractionTest {
     @Test
     fun `symlinked bin java is materialised`() {
         assumeTrue("filesystem cannot create symlinks", canSymlink())
-        val target = File(temp, "out").apply { mkdirs() }
+        val target = File(temp, "rt").apply { mkdirs() }
 
         extract(
             listOf(
