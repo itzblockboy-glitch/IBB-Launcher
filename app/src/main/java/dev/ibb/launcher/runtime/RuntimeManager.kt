@@ -221,10 +221,10 @@ class RuntimeManager(
                     }
                 }
                 '2' -> { // symlink
-                    val data = ByteArray(size.toInt())
-                    input.readFully(data)
-                    val linkTarget = data.takeWhile { it != 0.toByte() }.toByteArray().decodeToString()
-                    createSymlink(outFile, linkTarget)
+                    // POSIX tar stores the target in the header ("linkname", offset 157), never in
+                    // the body — the entry has no data. Reading `size` bytes here yields an empty
+                    // string, which used to silently drop the link.
+                    createSymlink(outFile, readString(header, 157, 100))
                     skipPadding(input, size)
                 }
                 else -> skipBytes(input, size + padding(size))
