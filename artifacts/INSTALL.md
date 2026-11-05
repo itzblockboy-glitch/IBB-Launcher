@@ -1,30 +1,51 @@
-# IBB Launcher 1.0.1 — installing the APK
+# IBB Launcher 1.1.0 — playable build
 
-Package: `dev.ibb.launcher` (debug build installs as `dev.ibb.launcher.debug`, so both can coexist)
-Minimum Android: 8.0 (API 26) · Architectures: arm64-v8a, armeabi-v7a, x86_64 · Signed: APK v2
+Package `dev.ibb.launcher` · Minimum Android 8.0 (API 26) · targetSdk 35
+Architectures: arm64-v8a, armeabi-v7a, x86_64 · Signed: APK Signature Scheme v2
 
 | File | Size | Notes |
 |---|---|---|
-| `app-release.apk` | 3.7 MB | R8-minified, debug-signed (fine to install) |
-| `app-debug.apk` | 21 MB | no shrinking, readable stack traces |
+| `app-release.apk` | 67 MB | R8-minified; includes the native execution layer |
+| `app-debug.apk` | 85 MB | Unminified; readable crash logs |
 
-Release page: https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.0.1
+Download: <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.1.0>
 
-Verify: `sha256sum -c SHA256SUMS.txt` (the checksums also appear on the release page).
+Install with `adb install -r app-release.apk`, or copy it to the phone and tap it
+(allow "install unknown apps" for the file manager).
 
-Install over USB:      `adb install -r app-release.apk`
-Install on the device: copy the file over, tap it, allow "install unknown apps" for that app.
+## First run — what to expect
 
-If Android refuses the install it is almost always (a) an older build with the same package id —
-uninstall first, or (b) a Play Protect prompt on a self-signed APK — tap "install anyway".
+1. **Account.** Tap *Add* on Home. Sign in with Microsoft (device-code flow: the launcher shows a
+   `microsoft.com/link` URL and a code to type) or create an offline profile for single player.
+2. **Version.** Home shows the newest release. Tap *Change* to install or pick another one.
+3. **Java.** The first Play tap downloads the matching runtime (~85 MB) and then the game files
+   (libraries + assets, several hundred MB). Use Wi-Fi. Progress is on the Home card and in
+   **Settings → Console**.
+4. **Play.** The game renders into the launcher's own surface, with the on-screen controller
+   (move stick, jump, sneak, inventory, drop, hotbar) over it.
 
-## What works right after installing
-Version catalogue (vanilla / Fabric / Forge / NeoForge / Quilt), Microsoft device-code sign-in,
-downloads with checksum + asset verification, mods / resource packs / shaders / worlds, per-version
-settings, the on-screen control editor, console and log export.
+Everything is downloaded from the official Mojang and OpenJDK-Android endpoints; nothing is
+bundled that would make the APK unreasonably large.
 
-## What still needs one more build
-Booting Minecraft needs the native execution layer, which these APKs do not contain:
-`libpojavexec.so` + `libexithook.so` (build with `-PwithNative` using the NDK), plus `glfw-stub.jar`
-and an Android JRE installed from Settings → Optional components / Runtimes. Launching without
-them fails gracefully with a console message rather than crashing.
+## If a launch fails
+
+Open **Settings → Console**. The log includes the exact JVM command line, the native bring-up
+steps (`LD_LIBRARY_PATH`, renderer load, surface attach) and the game's own output. The most
+common causes and fixes:
+
+| Symptom | Fix |
+|---|---|
+| Stops at "Starting Java" | Java runtime missing → Home → Play re-downloads it; or **Settings → Runtimes**. |
+| Black screen, no menu | Renderer unsupported → **Settings → Graphics → OpenGL ES 2**, then relaunch. |
+| Crashes with a GL/shader error | Same as above; Vulkan (Zink) needs a Vulkan 1.1 driver. |
+| OutOfMemory | Lower allocated RAM in **Settings → Performance**. |
+| Older/modded version will not start | Install Java 8 for ≤1.16.5, Java 17 for 1.17–1.20.4, Java 21 for 1.20.5+. |
+
+## What is actually in this build
+
+* Minecraft Java Edition support (1.7.10 → current), vanilla and Fabric/Forge/NeoForge/Quilt.
+* A real in-process JVM (`libpojavexec.so` + `libexithook.so`, compiled from the
+  PojavLauncher-derived bridge sources in `app/src/main/jni`).
+* The GLFW/LWJGL shim (`glfw-stub.jar`) and the OpenGL translation layer (gl4es, OSMesa/Zink).
+* Microsoft + offline accounts, downloads with SHA-1 verification, mods, resource packs, shaders,
+  worlds, crash reporting, and a console that shows the real game log.
