@@ -1,4 +1,4 @@
-# IBB Launcher 1.2.0 — playable build
+# IBB Launcher 1.3.0 — playable build
 
 Package `dev.ibb.launcher` · Minimum Android 8.0 (API 26) · targetSdk 35
 Architectures: arm64-v8a, armeabi-v7a, x86_64 · Signed: APK Signature Scheme v2
@@ -8,7 +8,7 @@ Architectures: arm64-v8a, armeabi-v7a, x86_64 · Signed: APK Signature Scheme v2
 | `app-release.apk` | 67 MB | R8-minified; includes the native execution layer |
 | `app-debug.apk` | 85 MB | Unminified; readable crash logs |
 
-Download: <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.2.0>
+Download: <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.3.0>
 
 The APKs themselves are **not** committed to this repository (67–85 MB each); the release assets
 are the distribution channel.

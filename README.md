@@ -167,10 +167,10 @@ See `app/src/main/assets/licenses/` for the full texts shipped inside the APK.
 ## Download
 
 * **Release APK (67 MB, R8-minified)** —
-  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.2.0/app-release.apk>
+  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.3.0/app-release.apk>
 * **Debug APK (85 MB, readable logs)** —
-  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.2.0/app-debug.apk>
-* Checksums and notes: [v1.2.0 release](https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.2.0)
+  <https://github.com/itzblockboy-glitch/IBB-Launcher/releases/download/v1.3.0/app-debug.apk>
+* Checksums and notes: [v1.3.0 release](https://github.com/itzblockboy-glitch/IBB-Launcher/releases/tag/v1.3.0)
 
 Every push is rebuilt by `.github/workflows/build-apk.yml`; pushing a `v*` tag publishes a new
 release with both APKs attached.
