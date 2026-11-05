@@ -162,21 +162,60 @@ jobs:
               call("POST", f"{api}/git/refs", {"ref": f"refs/heads/{branch}", "sha": base})
               print(f"created branch {branch}")
 
+          # The Contents API refuses to return files whose JSON/base64 representation
+          # exceeds ~100 MB, and the APK with the native layer is ~85 MB, so blobs are
+          # written and read through the Git Data API instead (100 MB per blob limit).
           folder = f"build/{os.environ['GITHUB_SHA']}"
-          for path in sorted(pathlib.Path("publish").iterdir()):
-              blob = base64.b64encode(path.read_bytes()).decode()
-              target = f"{folder}/{path.name}"
-              existing = call("GET", f"{api}/contents/{target}?ref={branch}")
-              payload = {
-                  "message": f"ci: publish {path.name}",
-                  "content": blob,
-                  "branch": branch,
-              }
-              if existing and "sha" in existing:
-                  payload["sha"] = existing["sha"]
-              result = call("PUT", f"{api}/contents/{target}", payload)
+
+          def ensure_branch():
+              if call("GET", f"{api}/git/ref/heads/{branch}") is not None:
+                  return True
+              head = call("GET", f"{api}/git/ref/heads/{os.environ['GITHUB_REF_NAME']}")
+              base = head["object"]["sha"] if head else os.environ["GITHUB_SHA"]
+              call("POST", f"{api}/git/refs", {"ref": f"refs/heads/{branch}", "sha": base})
+              print(f"created branch {branch}")
+              return True
+
+          def publish_file(path):
               size = path.stat().st_size
-              print(f"  {'ok ' if result else 'FAILED'} {target} ({size} bytes)")
+              # Hard API limit is 100 MB per blob.
+              if size > 95 * 1024 * 1024:
+                  print(f"  skip {path.name}: {size} bytes exceeds the blob limit")
+                  return
+              blob = call(
+                  "POST",
+                  f"{api}/git/blobs",
+                  {"content": base64.b64encode(path.read_bytes()).decode(), "encoding": "base64"},
+              )
+              if not blob:
+                  print(f"  FAILED {path.name}")
+                  return
+              head = call("GET", f"{api}/git/ref/heads/{branch}")
+              head_sha = head["object"]["sha"]
+              base_commit = call("GET", f"{api}/git/commits/{head_sha}")
+              base_tree = base_commit["tree"]["sha"]
+              new_tree = call(
+                  "POST",
+                  f"{api}/git/trees",
+                  {"base_tree": base_tree, "tree": [{"path": f"{folder}/{path.name}", "mode": "100644", "type": "blob", "sha": blob["sha"]}]},
+              )
+              if not new_tree:
+                  print(f"  FAILED tree for {path.name}")
+                  return
+              commit = call(
+                  "POST",
+                  f"{api}/git/commits",
+                  {"message": f"ci: publish {path.name}", "tree": new_tree["sha"], "parents": [head_sha]},
+              )
+              if not commit:
+                  print(f"  FAILED commit for {path.name}")
+                  return
+              ok = call("PATCH", f"{api}/git/refs/heads/{branch}", {"sha": commit["sha"]})
+              print(f"  {'ok ' if ok else 'FAILED'} {folder}/{path.name} ({size} bytes)")
+
+          ensure_branch()
+          for path in sorted(pathlib.Path("publish").iterdir()):
+              publish_file(path)
           PY
 
       - name: Upload APKs
