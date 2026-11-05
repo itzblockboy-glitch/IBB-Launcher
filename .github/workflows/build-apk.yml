@@ -138,7 +138,17 @@ jobs:
           for f in test.log build.log publish-probe.bin; do [ -f "$f" ] && cp "$f" publish/ || true; done
           if [ -d out ]; then
             ls -la out > publish/apk-list.txt || true
-            for apk in out/*.apk; do [ -f "$apk" ] && cp "$apk" publish/ || true; done
+            # Contents of the APK as text. The APK itself is ~85 MB and the Git Data API accepts
+            # only a fraction of that in one request, so the manifest is what gets published;
+            # the APKs themselves are attached to the GitHub Release (see the step below).
+            for apk in out/*.apk; do
+              [ -f "$apk" ] && unzip -l "$apk" > "publish/$(basename "$apk").contents.txt" || true
+            done
+            for apk in out/*.apk; do
+              if [ -f "$apk" ] && [ "$(stat -c%s "$apk")" -lt 20000000 ]; then
+                cp "$apk" publish/ || true
+              fi
+            done
           fi
           if [ -z "$(ls -A publish)" ]; then echo "nothing to publish"; exit 0; fi
           python3 - <<'PY'
