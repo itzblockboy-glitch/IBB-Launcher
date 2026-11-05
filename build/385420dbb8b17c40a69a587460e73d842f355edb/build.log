@@ -1,0 +1,603 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:l8DexDesugarLibDebug FROM-CACHE
+> Task :app:desugarDebugFileDependencies FROM-CACHE
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics FROM-CACHE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses
+> Task :app:mergeDebugJavaResource
+> Task :app:configureNdkBuildDebug[arm64-v8a]
+> Task :app:mergeLibDexDebug FROM-CACHE
+
+> Task :app:buildNdkBuildDebug[arm64-v8a] FAILED
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:119:69: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+C/C++:   119 |             printf("Failed to set signal hander for signal %i: %s", i, strerror(errno));
+C/C++:       |                                                            ~~       ^
+C/C++:       |                                                            %zu
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:202:37: warning: passing 'char **' to parameter of type 'const char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+C/C++:   202 |     free_char_array(env, argsArray, argv);
+C/C++:       |                                     ^~~~
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.h:11:75: note: passing argument to parameter 'charArray' here
+C/C++:    11 | void free_char_array(JNIEnv *env, jobjectArray jstringArray, const char **charArray);
+C/C++:       |                                                                           ^
+C/C++: 2 warnings generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:103:33: warning: passing 'const char *' to parameter of type 'char *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+C/C++:   103 |         android_update_LD_LIBRARY_PATH(ldLibPathUtf);
+C/C++:       |                                        ^~~~~~~~~~~~
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:156:32: warning: passing 'char **' to parameter of type 'const char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+C/C++:   156 |         free_char_array(env, cmdArgs, cmd_args_c);
+C/C++:       |                                       ^~~~~~~~~~
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:41:75: note: passing argument to parameter 'charArray' here
+C/C++:    41 | void free_char_array(JNIEnv *env, jobjectArray jstringArray, const char **charArray) {
+C/C++:       |                                                                           ^
+C/C++: 2 warnings generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+C/C++:   467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+C/C++:       |                                                                                             ~^
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+C/C++:    39 |         printf(error_message);                                             \
+C/C++:       |                ^~~~~~~~~~~~~
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:    87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+C/C++:       |                                                          ~~     ^~~~~~~~~~~~~~~
+C/C++:       |                                                          %d
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/swap_interval_no_egl.c:238:29: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+C/C++:   237 |         LOGW("ANativeWindow version does not match. Expected %i, got %i",
+C/C++:       |                                                              ~~
+C/C++:       |                                                              %lu
+C/C++:   238 |                             sizeof(struct ANativeWindow_real), nativeWindowReal->common.version);
+C/C++:       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/log.h:15:65: note: expanded from macro 'LOGW'
+C/C++:    15 | #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,    TAG, __VA_ARGS__)
+C/C++:       |                                                                 ^~~~~~~~~~~
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/awt_bridge.c:120:109: error: incompatible pointer to integer conversion passing 'void *' to parameter of type 'jint' (aka 'int') [-Wint-conversion]
+C/C++:   120 |     (*runtimeJNIEnvPtr_GRAPHICS)->ReleaseIntArrayElements(runtimeJNIEnvPtr_GRAPHICS, jreRgbArray, rgbArray, NULL);
+C/C++:       |                                                                                                             ^~~~
+C/C++: /usr/local/lib/android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_null.h:26:14: note: expanded from macro 'NULL'
+C/C++:    26 | #define NULL ((void*)0)
+C/C++:       |              ^~~~~~~~~~
+C/C++: 1 error generated.
+C/C++: make: *** [/usr/local/lib/android/sdk/ndk/27.0.12077973/build/core/build-binary.mk:420: /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj/local/arm64-v8a/objs-debug/pojavexec_awt/awt_bridge.o] Error 1
+C/C++: make: *** Waiting for unfinished jobs....
+
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeExtDexDebug
+
+[Incubating] Problems report is available at: file:///home/runner/work/IBB-Launcher/IBB-Launcher/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:buildNdkBuildDebug[arm64-v8a]'.
+> com.android.ide.common.process.ProcessException: [arm64-v8a] Prebuilt       : libbytehook.so <= /home/runner/.gradle/caches/8.13/transforms/031e0761f82a3878ec0941cc2b603819/transformed/bytehook-1.0.9/prefab/modules/bytehook/libs/android.arm64-v8a/
+  [arm64-v8a] SharedLibrary  : libawt_headless.so
+  [arm64-v8a] Compile        : pojavexec <= jre_launcher.c
+  [arm64-v8a] Compile        : pojavexec <= utils.c
+  [arm64-v8a] Compile        : pojavexec <= input_bridge_v3.c
+  [arm64-v8a] Compile        : awt_xawt <= xawt_fake.c
+  [arm64-v8a] Compile        : pojavexec <= stdio_is.c
+  [arm64-v8a] Compile        : exithook <= exit_hook.c
+  [arm64-v8a] Compile        : exithook <= chmod_hook.c
+  [arm64-v8a] Compile        : pojavexec <= loader_dlopen.c
+  [arm64-v8a] Compile        : pojavexec <= bigcoreaffinity.c
+  [arm64-v8a] Compile        : pojavexec <= gl_bridge.c
+  [arm64-v8a] Compile        : pojavexec <= egl_loader.c
+  [arm64-v8a] Compile        : pojavexec <= egl_bridge.c
+  [arm64-v8a] Compile        : pojavexec <= swap_interval_no_egl.c
+  [arm64-v8a] Compile        : pojavexec <= osm_bridge.c
+  [arm64-v8a] Compile        : pojavexec <= environ.c
+  [arm64-v8a] Compile        : pojavexec <= osmesa_loader.c
+  [arm64-v8a] Compile        : pojavexec <= emui_iterator_fix_hook.c
+  [arm64-v8a] Compile        : pojavexec <= lwjgl_dlopen_hook.c
+  [arm64-v8a] Compile        : linkerhook <= hook.c
+  [arm64-v8a] Compile        : pojavexec <= nsbypass.c
+  [arm64-v8a] Compile        : pojavexec <= java_exec_hooks.c
+  [arm64-v8a] SharedLibrary  : libawt_xawt.so
+  [arm64-v8a] SharedLibrary  : libpojavexec.so
+  make: Nothing to be done for 'pojavexec'.
+  [arm64-v8a] Compile        : pojavexec_awt <= awt_bridge.c
+  [arm64-v8a] SharedLibrary  : liblinkerhook.so
+  [arm64-v8a] SharedLibrary  : libexithook.so
+  
+  C++ build system [build] failed while executing:
+      /usr/local/lib/android/sdk/ndk/27.0.12077973/ndk-build \
+        NDK_PROJECT_PATH=null \
+        APP_BUILD_SCRIPT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/Android.mk \
+        NDK_APPLICATION_MK=/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/Application.mk \
+        NDK_GRADLE_INJECTED_IMPORT_PATH=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/.cxx/Debug/2a2e3141/prefab/arm64-v8a \
+        APP_ABI=arm64-v8a \
+        NDK_ALL_ABIS=arm64-v8a \
+        NDK_DEBUG=1 \
+        APP_PLATFORM=android-26 \
+        NDK_OUT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj \
+        NDK_LIBS_OUT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/lib \
+        -j4 \
+        awt_headless \
+        awt_xawt \
+        exithook \
+        linkerhook \
+        pojavexec \
+        pojavexec_awt
+    from /home/runner/work/IBB-Launcher/IBB-Launcher/app
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:119:69: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+    119 |             printf("Failed to set signal hander for signal %i: %s", i, strerror(errno));
+        |                                                            ~~       ^
+        |                                                            %zu
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:202:37: warning: passing 'char **' to parameter of type 'const char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+    202 |     free_char_array(env, argsArray, argv);
+        |                                     ^~~~
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.h:11:75: note: passing argument to parameter 'charArray' here
+     11 | void free_char_array(JNIEnv *env, jobjectArray jstringArray, const char **charArray);
+        |                                                                           ^
+  2 warnings generated.
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:103:33: warning: passing 'const char *' to parameter of type 'char *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+    103 |         android_update_LD_LIBRARY_PATH(ldLibPathUtf);
+        |                                        ^~~~~~~~~~~~
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:156:32: warning: passing 'char **' to parameter of type 'const char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+    156 |         free_char_array(env, cmdArgs, cmd_args_c);
+        |                                       ^~~~~~~~~~
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:41:75: note: passing argument to parameter 'charArray' here
+     41 | void free_char_array(JNIEnv *env, jobjectArray jstringArray, const char **charArray) {
+        |                                                                           ^
+  2 warnings generated.
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+    467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+        |                                                                                             ~^
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+     39 |         printf(error_message);                                             \
+        |                ^~~~~~~~~~~~~
+  1 warning generated.
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+     87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+        |                                                          ~~     ^~~~~~~~~~~~~~~
+        |                                                          %d
+  1 warning generated.
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/swap_interval_no_egl.c:238:29: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+    237 |         LOGW("ANativeWindow version does not match. Expected %i, got %i",
+        |                                                              ~~
+        |                                                              %lu
+    238 |                             sizeof(struct ANativeWindow_real), nativeWindowReal->common.version);
+        |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/log.h:15:65: note: expanded from macro 'LOGW'
+     15 | #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,    TAG, __VA_ARGS__)
+        |                                                                 ^~~~~~~~~~~
+  1 warning generated.
+  /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/awt_bridge.c:120:109: error: incompatible pointer to integer conversion passing 'void *' to parameter of type 'jint' (aka 'int') [-Wint-conversion]
+    120 |     (*runtimeJNIEnvPtr_GRAPHICS)->ReleaseIntArrayElements(runtimeJNIEnvPtr_GRAPHICS, jreRgbArray, rgbArray, NULL);
+        |                                                                                                             ^~~~
+  /usr/local/lib/android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_null.h:26:14: note: expanded from macro 'NULL'
+     26 | #define NULL ((void*)0)
+        |              ^~~~~~~~~~
+  1 error generated.
+  make: *** [/usr/local/lib/android/sdk/ndk/27.0.12077973/build/core/build-binary.mk:420: /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj/local/arm64-v8a/objs-debug/pojavexec_awt/awt_bridge.o] Error 1
+  make: *** Waiting for unfinished jobs....
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+* Exception is:
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:buildNdkBuildDebug[arm64-v8a]'.
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExecuter.java:130)
+	at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:293)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:128)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:116)
+	at org.gradle.api.internal.tasks.execution.ProblemsTaskPathTrackingTaskExecuter.execute(ProblemsTaskPathTrackingTaskExecuter.java:40)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:331)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:318)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:303)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+Caused by: org.gradle.internal.UncheckedException: com.android.ide.common.process.ProcessException: [arm64-v8a] Prebuilt       : libbytehook.so <= /home/runner/.gradle/caches/8.13/transforms/031e0761f82a3878ec0941cc2b603819/transformed/bytehook-1.0.9/prefab/modules/bytehook/libs/android.arm64-v8a/
+[arm64-v8a] SharedLibrary  : libawt_headless.so
+[arm64-v8a] Compile        : pojavexec <= jre_launcher.c
+[arm64-v8a] Compile        : pojavexec <= utils.c
+[arm64-v8a] Compile        : pojavexec <= input_bridge_v3.c
+[arm64-v8a] Compile        : awt_xawt <= xawt_fake.c
+[arm64-v8a] Compile        : pojavexec <= stdio_is.c
+[arm64-v8a] Compile        : exithook <= exit_hook.c
+[arm64-v8a] Compile        : exithook <= chmod_hook.c
+[arm64-v8a] Compile        : pojavexec <= loader_dlopen.c
+[arm64-v8a] Compile        : pojavexec <= bigcoreaffinity.c
+[arm64-v8a] Compile        : pojavexec <= gl_bridge.c
+[arm64-v8a] Compile        : pojavexec <= egl_loader.c
+[arm64-v8a] Compile        : pojavexec <= egl_bridge.c
+[arm64-v8a] Compile        : pojavexec <= swap_interval_no_egl.c
+[arm64-v8a] Compile        : pojavexec <= osm_bridge.c
+[arm64-v8a] Compile        : pojavexec <= environ.c
+[arm64-v8a] Compile        : pojavexec <= osmesa_loader.c
+[arm64-v8a] Compile        : pojavexec <= emui_iterator_fix_hook.c
+[arm64-v8a] Compile        : pojavexec <= lwjgl_dlopen_hook.c
+[arm64-v8a] Compile        : linkerhook <= hook.c
+[arm64-v8a] Compile        : pojavexec <= nsbypass.c
+[arm64-v8a] Compile        : pojavexec <= java_exec_hooks.c
+[arm64-v8a] SharedLibrary  : libawt_xawt.so
+[arm64-v8a] SharedLibrary  : libpojavexec.so
+make: Nothing to be done for 'pojavexec'.
+[arm64-v8a] Compile        : pojavexec_awt <= awt_bridge.c
+[arm64-v8a] SharedLibrary  : liblinkerhook.so
+[arm64-v8a] SharedLibrary  : libexithook.so
+
+C++ build system [build] failed while executing:
+    /usr/local/lib/android/sdk/ndk/27.0.12077973/ndk-build \
+      NDK_PROJECT_PATH=null \
+      APP_BUILD_SCRIPT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/Android.mk \
+      NDK_APPLICATION_MK=/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/Application.mk \
+      NDK_GRADLE_INJECTED_IMPORT_PATH=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/.cxx/Debug/2a2e3141/prefab/arm64-v8a \
+      APP_ABI=arm64-v8a \
+      NDK_ALL_ABIS=arm64-v8a \
+      NDK_DEBUG=1 \
+      APP_PLATFORM=android-26 \
+      NDK_OUT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj \
+      NDK_LIBS_OUT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/lib \
+      -j4 \
+      awt_headless \
+      awt_xawt \
+      exithook \
+      linkerhook \
+      pojavexec \
+      pojavexec_awt
+  from /home/runner/work/IBB-Launcher/IBB-Launcher/app
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:119:69: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+  119 |             printf("Failed to set signal hander for signal %i: %s", i, strerror(errno));
+      |                                                            ~~       ^
+      |                                                            %zu
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:202:37: warning: passing 'char **' to parameter of type 'const char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+  202 |     free_char_array(env, argsArray, argv);
+      |                                     ^~~~
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.h:11:75: note: passing argument to parameter 'charArray' here
+   11 | void free_char_array(JNIEnv *env, jobjectArray jstringArray, const char **charArray);
+      |                                                                           ^
+2 warnings generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:103:33: warning: passing 'const char *' to parameter of type 'char *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  103 |         android_update_LD_LIBRARY_PATH(ldLibPathUtf);
+      |                                        ^~~~~~~~~~~~
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:156:32: warning: passing 'char **' to parameter of type 'const char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+  156 |         free_char_array(env, cmdArgs, cmd_args_c);
+      |                                       ^~~~~~~~~~
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:41:75: note: passing argument to parameter 'charArray' here
+   41 | void free_char_array(JNIEnv *env, jobjectArray jstringArray, const char **charArray) {
+      |                                                                           ^
+2 warnings generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+  467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+      |                                                                                             ~^
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+   39 |         printf(error_message);                                             \
+      |                ^~~~~~~~~~~~~
+1 warning generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+   87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+      |                                                          ~~     ^~~~~~~~~~~~~~~
+      |                                                          %d
+1 warning generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/swap_interval_no_egl.c:238:29: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+  237 |         LOGW("ANativeWindow version does not match. Expected %i, got %i",
+      |                                                              ~~
+      |                                                              %lu
+  238 |                             sizeof(struct ANativeWindow_real), nativeWindowReal->common.version);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/log.h:15:65: note: expanded from macro 'LOGW'
+   15 | #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,    TAG, __VA_ARGS__)
+      |                                                                 ^~~~~~~~~~~
+1 warning generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/awt_bridge.c:120:109: error: incompatible pointer to integer conversion passing 'void *' to parameter of type 'jint' (aka 'int') [-Wint-conversion]
+  120 |     (*runtimeJNIEnvPtr_GRAPHICS)->ReleaseIntArrayElements(runtimeJNIEnvPtr_GRAPHICS, jreRgbArray, rgbArray, NULL);
+      |                                                                                                             ^~~~
+/usr/local/lib/android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_null.h:26:14: note: expanded from macro 'NULL'
+   26 | #define NULL ((void*)0)
+      |              ^~~~~~~~~~
+1 error generated.
+make: *** [/usr/local/lib/android/sdk/ndk/27.0.12077973/build/core/build-binary.mk:420: /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj/local/arm64-v8a/objs-debug/pojavexec_awt/awt_bridge.o] Error 1
+make: *** Waiting for unfinished jobs....
+	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:69)
+	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:42)
+	at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:128)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.doExecute(StandardTaskAction.java:58)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.execute(StandardTaskAction.java:51)
+	at org.gradle.api.internal.project.taskfactory.StandardTaskAction.execute(StandardTaskAction.java:29)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:244)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:30)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:27)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:48)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:229)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:212)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:195)
+	at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:162)
+	at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:105)
+	at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:44)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:59)
+	at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:56)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:56)
+	at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:44)
+	at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:42)
+	at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:75)
+	at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:55)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:50)
+	at org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:28)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:67)
+	at org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:37)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:61)
+	at org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:26)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:69)
+	at org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.java:46)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:40)
+	at org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:29)
+	at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:189)
+	at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$1(BuildCacheStep.java:75)
+	at org.gradle.internal.Either$Right.fold(Either.java:175)
+	at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:62)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:73)
+	at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:48)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:46)
+	at org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:35)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:75)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:53)
+	at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:35)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:37)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFinishedStep.java:27)
+	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:49)
+	at org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCachingStateStep.java:27)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:71)
+	at org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java:39)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:65)
+	at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:36)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:107)
+	at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:56)
+	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:64)
+	at org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeExecutionStep.java:43)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.executeWithNonEmptySources(AbstractSkipEmptyWorkStep.java:125)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:56)
+	at org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:36)
+	at org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStartedStep.java:38)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:36)
+	at org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:23)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.execute(HandleStaleOutputsStep.java:75)
+	at org.gradle.internal.execution.steps.HandleStaleOutputsStep.execute(HandleStaleOutputsStep.java:41)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$execute$0(AssignMutableWorkspaceStep.java:35)
+	at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:289)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:31)
+	at org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:22)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)
+	at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:67)
+	at org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringStep.java:39)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)
+	at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:48)
+	at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:35)
+	at org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:61)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:127)
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:116)
+	at org.gradle.api.internal.tasks.execution.ProblemsTaskPathTrackingTaskExecuter.execute(ProblemsTaskPathTrackingTaskExecuter.java:40)
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:331)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:318)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:303)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+Caused by: com.android.ide.common.process.ProcessException: [arm64-v8a] Prebuilt       : libbytehook.so <= /home/runner/.gradle/caches/8.13/transforms/031e0761f82a3878ec0941cc2b603819/transformed/bytehook-1.0.9/prefab/modules/bytehook/libs/android.arm64-v8a/
+[arm64-v8a] SharedLibrary  : libawt_headless.so
+[arm64-v8a] Compile        : pojavexec <= jre_launcher.c
+[arm64-v8a] Compile        : pojavexec <= utils.c
+[arm64-v8a] Compile        : pojavexec <= input_bridge_v3.c
+[arm64-v8a] Compile        : awt_xawt <= xawt_fake.c
+[arm64-v8a] Compile        : pojavexec <= stdio_is.c
+[arm64-v8a] Compile        : exithook <= exit_hook.c
+[arm64-v8a] Compile        : exithook <= chmod_hook.c
+[arm64-v8a] Compile        : pojavexec <= loader_dlopen.c
+[arm64-v8a] Compile        : pojavexec <= bigcoreaffinity.c
+[arm64-v8a] Compile        : pojavexec <= gl_bridge.c
+[arm64-v8a] Compile        : pojavexec <= egl_loader.c
+[arm64-v8a] Compile        : pojavexec <= egl_bridge.c
+[arm64-v8a] Compile        : pojavexec <= swap_interval_no_egl.c
+[arm64-v8a] Compile        : pojavexec <= osm_bridge.c
+[arm64-v8a] Compile        : pojavexec <= environ.c
+[arm64-v8a] Compile        : pojavexec <= osmesa_loader.c
+[arm64-v8a] Compile        : pojavexec <= emui_iterator_fix_hook.c
+[arm64-v8a] Compile        : pojavexec <= lwjgl_dlopen_hook.c
+[arm64-v8a] Compile        : linkerhook <= hook.c
+[arm64-v8a] Compile        : pojavexec <= nsbypass.c
+[arm64-v8a] Compile        : pojavexec <= java_exec_hooks.c
+[arm64-v8a] SharedLibrary  : libawt_xawt.so
+[arm64-v8a] SharedLibrary  : libpojavexec.so
+make: Nothing to be done for 'pojavexec'.
+[arm64-v8a] Compile        : pojavexec_awt <= awt_bridge.c
+[arm64-v8a] SharedLibrary  : liblinkerhook.so
+[arm64-v8a] SharedLibrary  : libexithook.so
+
+C++ build system [build] failed while executing:
+    /usr/local/lib/android/sdk/ndk/27.0.12077973/ndk-build \
+      NDK_PROJECT_PATH=null \
+      APP_BUILD_SCRIPT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/Android.mk \
+      NDK_APPLICATION_MK=/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/Application.mk \
+      NDK_GRADLE_INJECTED_IMPORT_PATH=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/.cxx/Debug/2a2e3141/prefab/arm64-v8a \
+      APP_ABI=arm64-v8a \
+      NDK_ALL_ABIS=arm64-v8a \
+      NDK_DEBUG=1 \
+      APP_PLATFORM=android-26 \
+      NDK_OUT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj \
+      NDK_LIBS_OUT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/lib \
+      -j4 \
+      awt_headless \
+      awt_xawt \
+      exithook \
+      linkerhook \
+      pojavexec \
+      pojavexec_awt
+  from /home/runner/work/IBB-Launcher/IBB-Launcher/app
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:119:69: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+  119 |             printf("Failed to set signal hander for signal %i: %s", i, strerror(errno));
+      |                                                            ~~       ^
+      |                                                            %zu
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:202:37: warning: passing 'char **' to parameter of type 'const char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+  202 |     free_char_array(env, argsArray, argv);
+      |                                     ^~~~
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.h:11:75: note: passing argument to parameter 'charArray' here
+   11 | void free_char_array(JNIEnv *env, jobjectArray jstringArray, const char **charArray);
+      |                                                                           ^
+2 warnings generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:103:33: warning: passing 'const char *' to parameter of type 'char *' discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  103 |         android_update_LD_LIBRARY_PATH(ldLibPathUtf);
+      |                                        ^~~~~~~~~~~~
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:156:32: warning: passing 'char **' to parameter of type 'const char **' discards qualifiers in nested pointer types [-Wincompatible-pointer-types-discards-qualifiers]
+  156 |         free_char_array(env, cmdArgs, cmd_args_c);
+      |                                       ^~~~~~~~~~
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/utils.c:41:75: note: passing argument to parameter 'charArray' here
+   41 | void free_char_array(JNIEnv *env, jobjectArray jstringArray, const char **charArray) {
+      |                                                                           ^
+2 warnings generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+  467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+      |                                                                                             ~^
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+   39 |         printf(error_message);                                             \
+      |                ^~~~~~~~~~~~~
+1 warning generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+   87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+      |                                                          ~~     ^~~~~~~~~~~~~~~
+      |                                                          %d
+1 warning generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/swap_interval_no_egl.c:238:29: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+  237 |         LOGW("ANativeWindow version does not match. Expected %i, got %i",
+      |                                                              ~~
+      |                                                              %lu
+  238 |                             sizeof(struct ANativeWindow_real), nativeWindowReal->common.version);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/log.h:15:65: note: expanded from macro 'LOGW'
+   15 | #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,    TAG, __VA_ARGS__)
+      |                                                                 ^~~~~~~~~~~
+1 warning generated.
+/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/awt_bridge.c:120:109: error: incompatible pointer to integer conversion passing 'void *' to parameter of type 'jint' (aka 'int') [-Wint-conversion]
+  120 |     (*runtimeJNIEnvPtr_GRAPHICS)->ReleaseIntArrayElements(runtimeJNIEnvPtr_GRAPHICS, jreRgbArray, rgbArray, NULL);
+      |                                                                                                             ^~~~
+/usr/local/lib/android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/18/include/__stddef_null.h:26:14: note: expanded from macro 'NULL'
+   26 | #define NULL ((void*)0)
+      |              ^~~~~~~~~~
+1 error generated.
+make: *** [/usr/local/lib/android/sdk/ndk/27.0.12077973/build/core/build-binary.mk:420: /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj/local/arm64-v8a/objs-debug/pojavexec_awt/awt_bridge.o] Error 1
+make: *** Waiting for unfinished jobs....
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt.execute(ExecuteProcess.kt:288)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt$executeProcess$1.invoke(ExecuteProcess.kt:108)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt$executeProcess$1.invoke(ExecuteProcess.kt:106)
+	at com.android.build.gradle.internal.cxx.timing.TimingEnvironmentKt.time(TimingEnvironment.kt:32)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt.executeProcess(ExecuteProcess.kt:106)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt.executeProcess$default(ExecuteProcess.kt:85)
+	at com.android.build.gradle.internal.cxx.build.CxxRegularBuilder.executeProcessBatch(CxxRegularBuilder.kt:332)
+	at com.android.build.gradle.internal.cxx.build.CxxRegularBuilder.build(CxxRegularBuilder.kt:129)
+	at com.android.build.gradle.tasks.ExternalNativeBuildTask.doTaskAction(ExternalNativeBuildTask.kt:72)
+	at com.android.build.gradle.internal.tasks.UnsafeOutputsTask$taskAction$$inlined$recordTaskAction$1.invoke(BaseTask.kt:59)
+	at com.android.build.gradle.internal.tasks.Blocks.recordSpan(Blocks.java:51)
+	at com.android.build.gradle.internal.tasks.UnsafeOutputsTask.taskAction(UnsafeOutputsTask.kt:81)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at org.gradle.internal.reflect.JavaMethod.invoke(JavaMethod.java:125)
+	... 117 more
+Caused by: com.android.ide.common.process.ProcessException: Error while executing process /usr/local/lib/android/sdk/ndk/27.0.12077973/ndk-build with arguments {NDK_PROJECT_PATH=null APP_BUILD_SCRIPT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/Android.mk NDK_APPLICATION_MK=/home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/Application.mk NDK_GRADLE_INJECTED_IMPORT_PATH=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/.cxx/Debug/2a2e3141/prefab/arm64-v8a APP_ABI=arm64-v8a NDK_ALL_ABIS=arm64-v8a NDK_DEBUG=1 APP_PLATFORM=android-26 NDK_OUT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj NDK_LIBS_OUT=/home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/lib -j4 awt_headless awt_xawt exithook linkerhook pojavexec pojavexec_awt}
+	at com.android.build.gradle.internal.process.GradleProcessResult.buildProcessException(GradleProcessResult.java:73)
+	at com.android.build.gradle.internal.process.GradleProcessResult.assertNormalExitValue(GradleProcessResult.java:48)
+	at com.android.build.gradle.internal.cxx.process.ExecuteProcessKt.execute(ExecuteProcess.kt:277)
+	... 132 more
+Caused by: org.gradle.process.internal.ExecException: Process 'command '/usr/local/lib/android/sdk/ndk/27.0.12077973/ndk-build'' finished with non-zero exit value 2
+	at org.gradle.process.internal.DefaultExecHandle$ExecResultImpl.assertNormalExitValue(DefaultExecHandle.java:442)
+	at com.android.build.gradle.internal.process.GradleProcessResult.assertNormalExitValue(GradleProcessResult.java:46)
+	... 133 more
+
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 38s
+32 actionable tasks: 10 executed, 4 from cache, 18 up-to-date
