@@ -215,8 +215,12 @@ jobs:
               print(f"  {'ok ' if ok else 'FAILED'} {folder}/{path.name} ({size} bytes)")
 
           ensure_branch()
-          for path in sorted(pathlib.Path("publish").iterdir()):
+          # Small files first, then the APKs: a failure on a 67-85 MB blob must not hide the logs.
+          everything = sorted(pathlib.Path("publish").iterdir(), key=lambda p: p.stat().st_size)
+          for path in everything:
+              print(f"publishing {path.name} ({path.stat().st_size} bytes)")
               publish_file(path)
+          print("publish complete")
           PY
 
       - name: Upload APKs
