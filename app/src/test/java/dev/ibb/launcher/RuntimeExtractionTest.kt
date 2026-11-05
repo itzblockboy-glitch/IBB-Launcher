@@ -82,10 +82,18 @@ class RuntimeExtractionTest {
     }
 
     private fun writeXz(entries: List<TarEntry>): File {
-        val tar = buildTar(entries)
+        val tar: ByteArray = buildTar(entries)
         val file = File(temp, "runtime.tar.xz")
-        file.outputStream().use { raw ->
-            XZOutputStream(raw).use { it.write(tar) }
+        val raw = file.outputStream()
+        try {
+            val xz = XZOutputStream(raw)
+            try {
+                xz.write(tar)
+            } finally {
+                xz.close()
+            }
+        } finally {
+            raw.close()
         }
         return file
     }
