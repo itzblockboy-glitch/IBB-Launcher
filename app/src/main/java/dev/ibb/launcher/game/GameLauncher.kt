@@ -12,6 +12,7 @@ import dev.ibb.launcher.data.model.VersionSummary
 import dev.ibb.launcher.game.nativebridge.ExecutionLayer
 import dev.ibb.launcher.repository.VersionInstaller
 import dev.ibb.launcher.runtime.RuntimeManager
+import net.kdt.pojavlaunch.utils.NativeLibraryPath
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -346,6 +347,10 @@ class GameLauncher(
 
         setEnv("POJAV_RENDERER", renderer.id)
         setEnv("POJAV_NATIVES_LIBRARY", prepared.nativeLibraryDir.absolutePath)
+        // The game JVM is created by libpojavexec.so and therefore has no ART library plumbing:
+        // it must find libpojavexec.so (to re-enter JNI_OnLoad for the *game* JVM) and the
+        // renderer by absolute/bare name. This also exports POJAV_ENVIRON-derived state to it.
+        NativeLibraryPath.prepare(prepared.nativeLibraryDir, System.getenv("LD_LIBRARY_PATH") ?: "")
         setEnv("LIBGL_NAME", renderer.nativeLibrary)
         setEnv("LIBGL_ES", if (renderer == Renderer.GLES2) "2" else "3")
         setEnv("MESA_GLSL_CACHE_DIR", File(context.cacheDir, "mesa").apply { mkdirs() }.absolutePath)

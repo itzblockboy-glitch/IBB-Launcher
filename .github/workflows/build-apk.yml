@@ -59,13 +59,6 @@ jobs:
           echo "ANDROID_NDK_HOME=$NDK_DIR" >> "$GITHUB_ENV"
           echo "ANDROID_NDK_ROOT=$NDK_DIR" >> "$GITHUB_ENV"
 
-      - name: Pipeline self-test (tiny blob)
-        run: |
-          # Proves the Git Data API publish path works independently of the 85 MB APK, so a
-          # failure on the big file can never be confused with a broken publisher.
-          head -c 4096 /dev/urandom > publish-probe.bin
-          echo "probe ready"
-
       - name: Fetch prebuilt native libraries
         run: |
           # LWJGL-on-Android, gl4es, OSMesa, OpenAL, freetype, JNA, unpack200 — third-party
@@ -135,7 +128,7 @@ jobs:
           # build publishes its own log (and, on success, the APK) as files via the Contents API.
           set -e
           mkdir -p publish
-          for f in test.log build.log publish-probe.bin; do [ -f "$f" ] && cp "$f" publish/ || true; done
+          for f in test.log build.log; do [ -f "$f" ] && cp "$f" publish/ || true; done
           if [ -d out ]; then
             ls -la out > publish/apk-list.txt || true
             # Contents of the APK as text. The APK itself is ~85 MB and the Git Data API accepts
