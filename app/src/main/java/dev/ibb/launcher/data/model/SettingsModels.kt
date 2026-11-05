@@ -2,7 +2,11 @@ package dev.ibb.launcher.data.model
 
 /**
  * Renderer back-ends exposed by the native execution layer.
- * [nativeLibrary] must match the module name the bring-up code dlopen()s.
+ *
+ * The id/name pair must match what `libpojavexec.so` expects: the native layer reads
+ * `POJAV_RENDERER` (set by `GameLauncher`) and `JREUtils.loadGraphicsLibrary()` maps it to the
+ * shared object it `dlopen()`s. The three supported values are the ones PojavLauncher ships
+ * prebuilt libraries for — anything else silently falls back to gl4es.
  */
 enum class Renderer(
     val id: String,
@@ -10,39 +14,34 @@ enum class Renderer(
     val nativeLibrary: String,
     val notes: String,
 ) {
-    ANGLE_GLES(
-        id = "angle",
-        displayName = "ANGLE → OpenGL ES 3",
-        nativeLibrary = "libEGL_angle.so",
-        notes = "Most compatible. Translates desktop GL 3.3 to GLES 3.x through ANGLE.",
+    GL4ES(
+        id = "opengles3",
+        displayName = "OpenGL ES 3 (gl4es)",
+        nativeLibrary = "libgl4es_114.so",
+        notes = "Default and most compatible. Translates desktop OpenGL to GLES 3; works on every GPU.",
     ),
     ZINK_VULKAN(
-        id = "zink",
-        displayName = "Zink → Vulkan",
-        nativeLibrary = "libOSMesa_zink.so",
-        notes = "Fastest on Adreno/Mali with modern drivers; falls back to ANGLE when unavailable.",
+        id = "vulkan_zink",
+        displayName = "Vulkan (Zink)",
+        nativeLibrary = "libOSMesa.so",
+        notes = "Often faster on Adreno/Mali, but needs a Vulkan 1.1 driver. Falls back to gl4es.",
     ),
-    VIRGL(
-        id = "virgl",
-        displayName = "VirGL (experimental)",
-        nativeLibrary = "libvirglrenderer.so",
-        notes = "Experimental path for devices with a host-side renderer. Expect glitches.",
+    GLES2(
+        id = "opengles2",
+        displayName = "OpenGL ES 2 (older GPUs)",
+        nativeLibrary = "libgl4es_114.so",
+        notes = "For devices that only expose GLES 2.0. Slower; some shader packs will not load.",
     ),
-    GL4ES(
-        id = "gl4es",
-        displayName = "GL4ES → GLES 2",
-        nativeLibrary = "libgl4es.so",
-        notes = "Legacy GL 1.x/2.x translator. Use for very old devices or 1.8-era modpacks.",
-    );
+    ;
 
     companion object {
-        fun fromId(id: String?): Renderer = entries.firstOrNull { it.id == id } ?: ANGLE_GLES
+        fun fromId(id: String?): Renderer = entries.firstOrNull { it.id == id } ?: GL4ES
     }
 }
 
 /** Runtime tuning knobs mirrored into the native layer (`llvmpipe`/zink env variables). */
 data class GraphicsOptions(
-    val renderer: Renderer = Renderer.ANGLE_GLES,
+    val renderer: Renderer = Renderer.GL4ES,
     val scaleFactor: Float = 1.0f,
     val vsync: Boolean = true,
     val maxFrameRate: Int = 60,

@@ -104,13 +104,32 @@ fun GameSurfaceHost(
     // The session sheet (control layout + exit) is always reachable, even with the console
     // overlay disabled — otherwise there would be no way to quit besides the back gesture.
     var layout by remember { mutableStateOf(app.controlRepository.selected) }
-    var status by remember { mutableStateOf<GameLauncher.LaunchState>(GameLauncher.LaunchState.Preparing("Starting")) }
+    var status by remember { mutableStateOf<GameLauncher.LaunchState>(GameLauncher.LaunchState.Preparing("Waiting for the display")) }
     var surfaceSize by remember { mutableStateOf(IntArray(2)) }
+    // Set by surfaceCreated. The JVM must not boot before EGL has a window, otherwise the game
+    // renders into nothing and Minecraft closes during its own start-up.
+    var pendingSurface by remember { mutableStateOf<android.view.Surface?>(null) }
 
     val launcher = remember { GameLauncher(app, app.versionInstaller, app.runtimeManager) }
     val gameContext = androidx.compose.ui.platform.LocalContext.current
     val streamer = remember { ConsoleStreamer() }
     var launched by remember { mutableStateOf(false) }
+
+    // ---- Clipboard bridge (the native layer calls back into CallbackBridge) ------------------
+    val clipboard = androidx.compose.ui.platform.LocalClipboardManager.current
+    DisposableEffect(clipboard) {
+        CallbackBridge.clipboardHandler = { action, copySrc ->
+            when (action) {
+                CallbackBridge.CLIPBOARD_COPY -> {
+                    copySrc?.let { clipboard.setText(androidx.compose.ui.text.AnnotatedString(it)) }
+                    copySrc
+                }
+                CallbackBridge.CLIPBOARD_PASTE -> clipboard.getText()?.text
+                else -> null
+            }
+        }
+        onDispose { CallbackBridge.clipboardHandler = null }
+    }
 
     DisposableEffect(Unit) {
         streamer.startLogcat()
@@ -120,21 +139,23 @@ fun GameSurfaceHost(
         }
     }
 
-    // Start the session exactly once, as soon as this screen exists. The render surface is
-    // optional at this point: `GameLauncher` boots the JVM and the EGL bridge picks the window up
-    // when it is available (or re-attaches after a configuration change).
-    LaunchedEffect(session.versionId, session.account.id) {
-        if (launched) return@LaunchedEffect
+    // Start the session exactly once, as soon as the output surface exists. Booting the JVM with
+    // no window is the classic "Minecraft opens and immediately closes" failure, so the launch is
+    // gated on `pendingSurface`.
+    LaunchedEffect(session.versionId, session.account.id, pendingSurface) {
+        if (launched || pendingSurface == null) return@LaunchedEffect
         launched = true
-        val metrics = app.resources.displayMetrics
+        val width = surfaceSize.getOrNull(0)?.takeIf { it > 0 } ?: app.resources.displayMetrics.widthPixels
+        val height = surfaceSize.getOrNull(1)?.takeIf { it > 0 } ?: app.resources.displayMetrics.heightPixels
+        status = GameLauncher.LaunchState.Preparing("Starting Java")
         val state = launcher.launch(
             GameLauncher.Request(
                 account = session.account,
                 versionId = session.versionId,
                 settings = settings,
-                surface = null, // attached by ExecutionLayer once the SurfaceView exists
-                surfaceWidth = metrics.widthPixels.coerceAtLeast(1280),
-                surfaceHeight = metrics.heightPixels.coerceAtLeast(720),
+                surface = pendingSurface,
+                surfaceWidth = width,
+                surfaceHeight = height,
                 versionSummary = session.summary,
             ),
         )
@@ -175,10 +196,15 @@ fun GameSurfaceHost(
                     holder.addCallback(object : SurfaceHolder.Callback {
                         override fun surfaceCreated(holder: SurfaceHolder) {
                             surfaceSize = intArrayOf(holder.surfaceFrame.width(), holder.surfaceFrame.height())
-                            // The JVM boot is started from LaunchedEffect below, not here: the
-                            // surface can arrive *after* a rotation/recreation while the game is
-                            // already running, in which case we only re-attach the window.
-                            ExecutionLayer.attachSurface(holder.surface)
+                            if (launched) {
+                                // Rotation / return from background while the game is alive: only
+                                // the window needs to be re-attached.
+                                ExecutionLayer.attachSurface(holder.surface)
+                            } else {
+                                // First frame: the launch coroutine waits on this, then does the
+                                // full native bring-up including attachSurface().
+                                pendingSurface = holder.surface
+                            }
                         }
 
                         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -193,7 +219,7 @@ fun GameSurfaceHost(
                         }
 
                         override fun surfaceDestroyed(holder: SurfaceHolder) {
-                            ExecutionLayer.detachSurface()
+                            if (launched) ExecutionLayer.detachSurface()
                         }
                     })
                 }

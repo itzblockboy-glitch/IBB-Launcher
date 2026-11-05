@@ -110,6 +110,9 @@ object JREUtils {
     /** Pumps one frame of an AWT-based screen; returns `[width, height]` or null when idle. */
     @JvmStatic external fun renderAWTScreenFrame(): IntArray?
 
+    /** Runs a helper binary from the runtime (used to unpack archives / run `unpack200`). */
+    @JvmStatic external fun executeBinary(argv: Array<String>): Int
+
     // ---------------------------------------------------------------------------------------------
     // Safe wrappers — every caller in the launcher uses these.
     // ---------------------------------------------------------------------------------------------

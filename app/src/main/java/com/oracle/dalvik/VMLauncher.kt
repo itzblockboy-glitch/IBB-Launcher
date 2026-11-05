@@ -9,10 +9,10 @@ import net.kdt.pojavlaunch.utils.JREUtils
  * ==============================================================================================
  * Why this class lives in `com.oracle.dalvik`
  * ==============================================================================================
- * `libpojavexec.so` exports `Java_com_oracle_dalvik_VMLauncher_launchJVM` (see upstream
- * `jni/jre_launcher.c`). JNI binds native methods by the *literal* mangled class name, so this
- * class cannot be moved or renamed without also rebuilding the `.so`. The package is intentionally
- * "foreign" for that reason — it is the ABI, not a design choice.
+ * `libpojavexec.so` exports `Java_com_oracle_dalvik_VMLauncher_launchJVM` (see
+ * `src/main/jni/jre_launcher.c`). JNI binds native methods by the *literal* mangled class name, so
+ * moving this class, renaming it, or renaming [launchJVM] silently breaks the binding and the
+ * launch dies with `UnsatisfiedLinkError` the moment the game thread starts.
  *
  * ==============================================================================================
  * Contract
@@ -20,7 +20,7 @@ import net.kdt.pojavlaunch.utils.JREUtils
  * The call **blocks the calling thread until Minecraft exits** and returns the process exit code
  * (0 = clean quit, anything else = crash or kill). We therefore run it on a dedicated
  * `IBB-GameThread`. Once `JLI_Launch` returns, the JVM cannot be restarted in the same process, so
- * the UI offers a *relaunch* (fresh session) rather than a retry.
+ * the UI offers a *relaunch* (fresh process) rather than a retry.
  *
  * `argv[0]` is the program name (`java`), exactly as a shell would pass it.
  */
@@ -28,11 +28,7 @@ object VMLauncher {
 
     private const val TAG = "VMLauncher"
 
-    /**
-     * Loads the native bridge lazily so importing this object costs nothing.
-     *
-     * @return true when `libpojavexec.so` is present for this ABI.
-     */
+    /** True when `libpojavexec.so` is present for this ABI and bound successfully. */
     @JvmStatic
     fun isAvailable(): Boolean = JREUtils.isAvailable() || JREUtils.loadNativeLibraries()
 
@@ -45,23 +41,23 @@ object VMLauncher {
      *         this into a readable launch failure instead of an `UnsatisfiedLinkError`.
      */
     @JvmStatic
-    fun launchJVM(argv: Array<String>): Int {
+    fun startJVM(argv: Array<String>): Int {
         if (!isAvailable()) {
             throw IllegalStateException(
                 "The native execution layer (libpojavexec.so) is missing for this device's ABI. " +
-                    "See docs/NATIVE_LAYER.md — the JNI bridge must be built for arm64-v8a, " +
-                    "armeabi-v7a and x86_64 and placed in app/src/main/jniLibs/<abi>/.",
+                    "Reinstall the launcher, or rebuild with the NDK (see docs/NATIVE_LAYER.md).",
             )
         }
-        Log.d(TAG) { "launchJVM(${argv.size} args) on ${Thread.currentThread().name}" }
-        return launchJVMNative(argv)
+        IbbLog.jvm("[VM] launchJVM(${argv.size} args) on ${Thread.currentThread().name}")
+        return launchJVM(argv)
     }
 
-    /** Implemented by `libpojavexec.so`. Not called directly — see [launchJVM]. */
+    /**
+     * Implemented by `libpojavexec.so` as `Java_com_oracle_dalvik_VMLauncher_launchJVM`.
+     *
+     * Not called directly — use [startJVM], which checks availability first so a missing library
+     * turns into a readable message instead of a raw link error.
+     */
     @JvmStatic
-    private external fun launchJVMNative(argv: Array<String>): Int
-
-    private object Log {
-        fun d(tag: String, message: () -> String) = IbbLog.jvm("[${tag}] ${message()}")
-    }
+    external fun launchJVM(argv: Array<String>): Int
 }

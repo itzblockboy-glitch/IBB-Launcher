@@ -71,8 +71,11 @@ import dev.ibb.launcher.ui.theme.Mint
 import dev.ibb.launcher.ui.theme.Porcelain
 import dev.ibb.launcher.ui.theme.Violet
 import dev.ibb.launcher.ui.theme.VioletBright
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Terminal
+import dev.ibb.launcher.ui.theme.Void
 
 /**
  * Settings.
@@ -98,6 +101,37 @@ fun SettingsScreen(app: IbbApplication) {
     var showAbout by remember { mutableStateOf(false) }
     var runtimeBusy by remember { mutableStateOf<Int?>(null) }
     var runtimeMessage by remember { mutableStateOf<String?>(null) }
+    var showConsole by remember { mutableStateOf(false) }
+
+    // The console left the bottom bar so five tabs stay readable; it opens as a full-screen sheet
+    // from here. It is also what a failed launch points at, so it must never be unreachable.
+    if (showConsole) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { showConsole = false },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Void),
+            ) {
+                ConsoleScreen(app = app)
+                Text(
+                    "Close",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Cyan,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .statusBarsPadding()
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.White.copy(alpha = 0.08f))
+                        .clickableNoRipple { showConsole = false }
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                )
+            }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -105,6 +139,31 @@ fun SettingsScreen(app: IbbApplication) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item { BrandHeader(subtitle = "Settings") }
+
+        item {
+            GlassCard(
+                modifier = Modifier.fillMaxWidth(),
+                accent = Cyan,
+                accentStrength = 0.06f,
+                contentPadding = PaddingValues(14.dp),
+                onClick = { showConsole = true },
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Rounded.Terminal, contentDescription = null, tint = Cyan, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(12.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text("Console", style = MaterialTheme.typography.titleSmall, color = Porcelain)
+                        Text(
+                            "Launch logs, errors and crash output",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Ash,
+                        )
+                    }
+                    Icon(Icons.Rounded.ChevronRight, contentDescription = null, tint = Ash, modifier = Modifier.size(18.dp))
+                }
+            }
+        }
+
         item { SectionHeader("Tune the experience", accent = Cyan) }
 
         // --- Graphics -----------------------------------------------------------------

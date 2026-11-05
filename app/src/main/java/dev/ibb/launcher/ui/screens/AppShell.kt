@@ -72,10 +72,8 @@ import java.io.File
 enum class Destination(val label: String, val icon: ImageVector) {
     HOME("Home", Icons.Rounded.Home),
     VERSIONS("Versions", Icons.Rounded.Inventory2),
-    SKINS("Skins", Icons.Rounded.Palette),
-    ACCOUNTS("Accounts", Icons.Rounded.AccountCircle),
     FILES("Files", Icons.Rounded.FolderOpen),
-    CONSOLE("Console", Icons.Rounded.Terminal),
+    ACCOUNTS("Account", Icons.Rounded.AccountCircle),
     SETTINGS("Settings", Icons.Rounded.Tune),
 }
 
@@ -114,13 +112,15 @@ fun AppShell(
                         onLaunch = onLaunch,
                         onOpenVersions = { destination = Destination.VERSIONS },
                         onOpenFiles = { destination = Destination.FILES },
-                        onOpenSkins = { destination = Destination.SKINS },
+                        onOpenSkins = { destination = Destination.ACCOUNTS },
+                        onOpenAccounts = { destination = Destination.ACCOUNTS },
                     )
                     Destination.VERSIONS -> VersionsScreen(app = app, onLaunch = onLaunch)
-                    Destination.SKINS -> SkinsScreen(app = app)
+                    Destination.FILES -> FilesScreen(
+                        app = app,
+                        versionId = app.settingsStore.settings.value.selectedVersionId.ifBlank { "1.21.4" },
+                    )
                     Destination.ACCOUNTS -> AccountsScreen(app = app)
-                    Destination.FILES -> FilesScreen(app = app, versionId = app.settingsStore.settings.value.selectedVersionId.ifBlank { "1.21.4" })
-                    Destination.CONSOLE -> ConsoleScreen(app = app)
                     Destination.SETTINGS -> SettingsScreen(app = app)
                 }
             }
@@ -139,15 +139,8 @@ private fun IbbBottomBar(
     onSelect: (Destination) -> Unit,
     bottomInset: androidx.compose.ui.unit.Dp,
 ) {
-    val items = listOf(
-        Destination.HOME,
-        Destination.VERSIONS,
-        Destination.SKINS,
-        Destination.ACCOUNTS,
-        Destination.FILES,
-        Destination.CONSOLE,
-        Destination.SETTINGS,
-    )
+    // Five destinations is the most that keeps every label on one line at 320 dp.
+    val items = Destination.entries
     Row(
         modifier = Modifier
             .fillMaxWidth()

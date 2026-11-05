@@ -118,6 +118,7 @@ class GameLauncher(
         val versionDir: File,
         val javaMajor: Int,
         val runtimeHome: File,
+        val nativeLibraryDir: File,
         val nativesDir: File,
         val classpath: List<String>,
     )
@@ -153,27 +154,38 @@ class GameLauncher(
         seedInstanceDefaults(instanceDir)
 
         val natives = IbbPaths.nativesDir(context, request.versionId)
+        val nativeLibraryDir = File(context.applicationInfo.nativeLibraryDir)
         val classpath = buildClasspath(flattened, instanceDir, natives, javaMajor)
 
-        return Prepared(flattened, instanceDir, javaMajor, runtimeHome, natives, classpath)
+        return Prepared(flattened, instanceDir, javaMajor, runtimeHome, nativeLibraryDir, natives, classpath)
     }
 
+    /**
+     * Builds the game classpath.
+     *
+     * Order is load-bearing:
+     *  1. **authlib-injector** (optional) — must be able to replace the auth classes.
+     *  2. **glfw-stub.jar** — supplies `org.lwjgl.glfw.*` against the Android EGL bridge. It has
+     *     to shadow the desktop `lwjgl-glfw.jar`, so the real jar is filtered out below.
+     *  3. every remaining version library (LWJGL 3 is skipped: the stub also carries the GL
+     *     bindings Minecraft actually calls, and the desktop ones reference unavailable symbols).
+     *  4. the client jar last, so mod loaders can shadow vanilla classes.
+     */
     private fun buildClasspath(detail: VersionDetail, instanceDir: File, natives: File, javaMajor: Int): List<String> {
         val entries = mutableListOf<String>()
-        // The glfw/EGL shim must win over any desktop LWJGL jar pulled in transitively.
-        // Add stubs first: they must shadow the desktop LWJGL classes shipped by mod loaders.
-        val authStub = yggdrasilStub()
-        if (authStub != null) entries += authStub.absolutePath
-        val glfwJar = glfwStub()
-        if (glfwJar != null) entries += glfwJar.absolutePath
+
+        yggdrasilStub()?.let { entries += it.absolutePath }
+        glfwStub()?.let { entries += it.absolutePath }
 
         val env = VersionResolver.Env(osName = "linux", osArch = if (is64Bit()) "aarch64" else "arm")
         for (library in VersionResolver.dedupeLibraries(detail.libraries)) {
             if (!VersionResolver.isAndroidCompatible(library, env)) continue
+            // The Android LWJGL is supplied by the stub + the packaged .so files.
+            if (library.name.startsWith("org.lwjgl:")) continue
             val file = installer.libraryFile(library.name)
             if (file.exists()) entries += file.absolutePath
         }
-        // The client jar always comes last so mod loaders can shadow vanilla classes.
+
         val jarId = detail.inheritsFrom ?: detail.id
         val clientJar = File(IbbPaths.versionsDir(context), "$jarId/$jarId.jar")
         if (clientJar.exists()) entries += clientJar.absolutePath
@@ -232,7 +244,10 @@ class GameLauncher(
             assetIndexId = prepared.detail.assetIndex?.id ?: prepared.detail.assets,
             versionId = request.versionId,
             versionType = prepared.detail.type,
-            nativesDirectory = prepared.nativesDir.absolutePath,
+            // LWJGL/JNA load `liblwjgl*.so`, `libopenal.so`, `libjnidispatch.so` from the APK's
+            // own lib directory, which is where the native layer lives. The per-version natives
+            // folder is kept in front for mods that ship their own .so files.
+            nativesDirectory = prepared.nativesDir.absolutePath + ":" + prepared.nativeLibraryDir.absolutePath,
             librariesDirectory = IbbPaths.librariesDir(context).absolutePath,
             runtimeHome = prepared.runtimeHome.absolutePath,
             windowWidth = virtualWidth,
@@ -261,44 +276,52 @@ class GameLauncher(
     private fun parseJvmArgs(settings: LauncherSettings): List<String> =
         settings.performance.jvmArgs.split(Regex("\\s+")).filter { it.isNotBlank() }
 
-    private fun rendererLibrary(renderer: Renderer): String? = when (renderer) {
-        Renderer.ANGLE_GLES -> "libEGL_angle.so"
-        Renderer.ZINK_VULKAN -> "libOSMesa_zink.so"
-        Renderer.VIRGL -> "libvirglrenderer.so"
-        Renderer.GL4ES -> "libgl4es.so"
-    }
+    /**
+     * The renderer shared object, exactly as `JREUtils.loadGraphicsLibrary()` expects it.
+     *
+     * The native layer `dlopen()`s this by bare name (it is already in the APK's lib dir, which is
+     * on the loader path), so do not prefix it with a directory.
+     */
+    private fun rendererLibrary(renderer: Renderer): String = renderer.nativeLibrary
 
     /**
      * Native bring-up + in-process JVM launch.
      *
-     * Runs on a dedicated thread with a generous stack (the JVM launcher recurses through JLI and
-     * LWJGL init) and sets the process-wide environment before `JLI_Launch` reads it.
+     * The order below is the one the native layer requires; changing it produces failures that
+     * look unrelated (a JVM that starts but cannot find `libjvm.so`, or a black surface because the
+     * window was attached after EGL was initialised):
+     *
+     *  1. `LD_LIBRARY_PATH` → the runtime's `lib/`, `lib/server`, `lib/jli` and the APK's native dir.
+     *  2. `dlopen` the JVM's own libraries so `JLI_Launch` does not have to resolve them itself.
+     *  3. renderer (`libgl4es_114.so` / `libOSMesa.so`) — must precede EGL init.
+     *  4. `setupBridgeWindow(surface)` → hands EGL the SurfaceView's ANativeWindow.
+     *  5. `setupExitMethod(context)` + `initializeHooks()` → exit interception, chmod/linker hooks.
+     *  6. `startJVM(argv)` on a dedicated thread; blocks until the game exits.
      */
     private fun execute(request: Request, prepared: Prepared, argv: List<String>): Int {
-        ExecutionLayer.setLibraryPath(prepared.runtimeHome)
+        val nativeDir = File(context.applicationInfo.nativeLibraryDir)
+        val renderer = request.settings.graphics.renderer
+
+        ExecutionLayer.setLibraryPath(prepared.runtimeHome, nativeDir)
         ExecutionLayer.preloadJvm(prepared.runtimeHome)
-        ExecutionLayer.loadRenderer(File(context.applicationInfo.nativeLibraryDir), rendererLibrary(request.settings.graphics.renderer))
+
+        // Environment consumed by the GLFW stub, the EGL bridge and Mesa.
+        applyNativeEnvironment(request, prepared, renderer)
+
+        ExecutionLayer.loadRenderer(nativeDir, rendererLibrary(renderer))
         ExecutionLayer.attachSurface(request.surface)
-        ExecutionLayer.initializeHooks()
         ExecutionLayer.setupExitHandler(context)
+        ExecutionLayer.initializeHooks()
         ExecutionLayer.chdir(prepared.versionDir.absolutePath)
 
-        // Env vars consumed by the GLFW/EGL shim and by Mesa when zink is selected.
-        setEnv("POJAV_NATIVES_LIBRARY", prepared.nativesDir.absolutePath)
-        setEnv("POJAV_RENDERER", request.settings.graphics.renderer.id)
-        setEnv("MESA_NO_ERROR", "1")
-        if (request.settings.graphics.renderer == Renderer.ZINK_VULKAN) {
-            setEnv("MESA_GL_VERSION_OVERRIDE", "4.6")
-            setEnv("GALLIUM_DRIVER", "zink")
-            setEnv("ZINK_DESCRIPTORS", "lazy")
-            if (request.settings.graphics.zinkPreferSystemDriver) setEnv("ZINK_USE_SYSTEM_DRIVER", "1")
-        }
-        setEnv("LIBGL_ES", "3")
+        // Route the game's stdout/stderr into the in-app console. Must run before JLI_Launch
+        // redirects the JVM's stdio.
+        GameLogSink.attach(File(prepared.versionDir, "logs/latest.log"))
 
         var exitCode = -1
         val thread = Thread({
             exitCode = try {
-                com.oracle.dalvik.VMLauncher.launchJVM(argv.toTypedArray())
+                com.oracle.dalvik.VMLauncher.startJVM(argv.toTypedArray())
             } catch (t: Throwable) {
                 IbbLog.e(TAG, "JVM launch threw", t)
                 -1
@@ -311,6 +334,37 @@ class GameLauncher(
         thread.join()
         ExecutionLayer.detachSurface()
         return exitCode
+    }
+
+    /**
+     * Sets the environment the native bridge reads. These names are read by
+     * `libpojavexec.so` / Mesa / the GLFW stub and are **not** invented here — they are the
+     * contract published by the bridge project.
+     */
+    private fun applyNativeEnvironment(request: Request, prepared: Prepared, renderer: Renderer) {
+        val graphics = request.settings.graphics
+
+        setEnv("POJAV_RENDERER", renderer.id)
+        setEnv("POJAV_NATIVES_LIBRARY", prepared.nativeLibraryDir.absolutePath)
+        setEnv("LIBGL_NAME", renderer.nativeLibrary)
+        setEnv("LIBGL_ES", if (renderer == Renderer.GLES2) "2" else "3")
+        setEnv("MESA_GLSL_CACHE_DIR", File(context.cacheDir, "mesa").apply { mkdirs() }.absolutePath)
+        setEnv("force_glsl_extensions_warn", "true")
+        setEnv("allow_higher_compat_version", "true")
+        setEnv("allow_glsl_extension_directive_midshader", "true")
+        setEnv("FORCE_VSYNC", if (graphics.vsync) "1" else "0")
+        setEnv("PATH", "${prepared.runtimeHome.absolutePath}/bin:" + (System.getenv("PATH") ?: "/system/bin"))
+
+        if (graphics.bigCoreAffinity) setEnv("POJAV_BIG_CORE_AFFINITY", "1")
+
+        if (renderer == Renderer.ZINK_VULKAN) {
+            setEnv("MESA_LOADER_DRIVER_OVERRIDE", "zink")
+            setEnv("MESA_GL_VERSION_OVERRIDE", "4.6")
+            setEnv("GALLIUM_DRIVER", "zink")
+            setEnv("MESA_NO_ERROR", "1")
+            if (graphics.zinkPreferSystemDriver) setEnv("ZINK_USE_SYSTEM_DRIVER", "1")
+        }
+        if (graphics.adrenoTurbo) setEnv("POJAV_LOAD_TURNIP", "1")
     }
 
     private fun setEnv(key: String, value: String) {

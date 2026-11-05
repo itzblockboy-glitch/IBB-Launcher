@@ -1,6 +1,7 @@
 package dev.ibb.launcher.game
 
 import android.content.Context
+import dev.ibb.launcher.BuildConfig
 import dev.ibb.launcher.core.IbbLog
 import dev.ibb.launcher.data.network.Http
 import kotlinx.coroutines.Dispatchers
@@ -46,8 +47,41 @@ object ComponentManager {
     fun glfwStubDir(context: Context): File = File(componentsDir(context), "lwjgl3").apply { mkdirs() }
 
     /** The stub jar `GameLauncher` will put first on the classpath, if any. */
-    fun glfwStub(context: Context): File? = glfwStubDir(context).listFiles()
-        ?.firstOrNull { it.name.startsWith("glfw-stub") && it.extension == "jar" }
+    /**
+     * The GLFW/LWJGL stub, extracted from the APK on first use.
+     *
+     * It ships in `assets/components/lwjgl3/glfw-stub.jar` rather than being downloaded: without
+     * it *nothing* can start (it owns `org.lwjgl.glfw` and the GL bindings), so making the first
+     * launch depend on the network would be a needless failure mode. It is copied out of assets
+     * once per app version because a jar inside assets cannot be put on a `-cp` path.
+     */
+    fun glfwStub(context: Context): File? {
+        val dir = glfwStubDir(context)
+        val target = File(dir, "glfw-stub.jar")
+        val versioned = File(dir, ".extracted-${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}")
+        if (target.exists() && target.length() > 0 && versioned.exists()) return target
+
+        val fromAssets = runCatching {
+            context.assets.open("components/lwjgl3/glfw-stub.jar").use { input ->
+                val partial = File(dir, "glfw-stub.jar.part")
+                partial.outputStream().use { output -> input.copyTo(output, bufferSize = 1 shl 16) }
+                if (!partial.renameTo(target)) {
+                    partial.copyTo(target, overwrite = true)
+                    partial.delete()
+                }
+            }
+            versioned.writeText("ok")
+            IbbLog.i(TAG, "Extracted glfw-stub.jar (${target.length()} bytes)")
+            target
+        }.getOrElse {
+            IbbLog.e(TAG, "glfw-stub.jar missing from the APK assets", it)
+            null
+        }
+        if (fromAssets != null) return fromAssets
+
+        // Fall back to a user-supplied jar (useful when testing a newer stub without a rebuild).
+        return dir.listFiles()?.firstOrNull { it.name != "glfw-stub.jar.part" && it.extension == "jar" }
+    }
 
     fun authlibInjector(context: Context): File? =
         File(componentsDir(context), "authlib-injector.jar").takeIf { it.exists() }
@@ -58,7 +92,7 @@ object ComponentManager {
             title = "GLFW stub",
             description = "Required to run any version. Supplies org.lwjgl.glfw against the native EGL bridge.",
             target = File(glfwStubDir(context), "glfw-stub.jar"),
-            url = null, // shipped by the bridge project; see docs/NATIVE_LAYER.md
+            url = null, // bundled in assets/components/lwjgl3/glfw-stub.jar
             optional = false,
         ),
         Component(

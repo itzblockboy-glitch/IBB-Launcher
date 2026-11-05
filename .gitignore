@@ -1,3 +1,6 @@
 
 # Build outputs pulled back from the CI run (binary, keep out of git history)
 artifacts/*.apk
+
+# Prebuilt third-party native libs (fetched by tools/fetch_native_libs.sh, not source)
+app/src/main/jniLibs/

@@ -47,13 +47,20 @@ object ExecutionLayer {
         "libjimage.so",
     )
 
-    fun setLibraryPath(runtimeHome: File) {
-        val libPath = listOf(
-            File(runtimeHome, "lib").absolutePath,
-            File(runtimeHome, "lib/server").absolutePath,
-            File(runtimeHome, "lib/client").absolutePath,
-            File(runtimeHome, "lib/jli").absolutePath,
-        ).filter { File(it).exists() }.joinToString(":")
+    /**
+     * Sets `LD_LIBRARY_PATH` for everything loaded from here on.
+     *
+     * The APK's own native directory goes **last**: it holds `libpojavexec.so`, the renderer and
+     * LWJGL, and must never shadow the runtime's own `libjvm.so`.
+     */
+    fun setLibraryPath(runtimeHome: File, nativeLibraryDir: File?) {
+        val libPath = buildList {
+            add(File(runtimeHome, "lib").absolutePath)
+            add(File(runtimeHome, "lib/server").absolutePath)
+            add(File(runtimeHome, "lib/client").absolutePath)
+            add(File(runtimeHome, "lib/jli").absolutePath)
+            nativeLibraryDir?.let { add(it.absolutePath) }
+        }.filter { File(it).exists() }.joinToString(":")
         JREUtils.setLdLibraryPath(libPath)
         IbbLog.jvm("LD_LIBRARY_PATH=$libPath")
     }
@@ -88,16 +95,20 @@ object ExecutionLayer {
         return candidates.any { candidate -> candidate.exists() && JREUtils.dlopenSafe(candidate.absolutePath) }
     }
 
-    /** Preferred browser of the OpenGL translation library (ANGLE / zink / gl4es). */
+    /**
+     * Loads the OpenGL translation library (`libgl4es_114.so` or `libOSMesa.so`).
+     *
+     * It is dlopen'd by bare name first because the APK's lib directory is already on the loader
+     * path; the absolute path is the fallback for when `LD_LIBRARY_PATH` has not been applied yet.
+     * A failure is not fatal — gl4es is the fallback and reports the missing renderer itself.
+     */
     fun loadRenderer(nativeLibraryDir: File, rendererLibrary: String?): Boolean {
-        if (rendererLibrary.isNullOrBlank()) return true // system GLES passthrough
-        val candidates = listOf(
-            File(nativeLibraryDir, rendererLibrary),
-            File(nativeLibraryDir, rendererLibrary.removePrefix("lib")),
-        )
-        val loaded = candidates.any { it.exists() && JREUtils.dlopenSafe(it.absolutePath) } ||
-            JREUtils.dlopenSafe(rendererLibrary)
-        if (!loaded) IbbLog.w(TAG, "Renderer $rendererLibrary not found; falling back to system GLES")
+        if (rendererLibrary.isNullOrBlank()) return true
+        val loaded = JREUtils.dlopenSafe(rendererLibrary) ||
+            runCatching { File(nativeLibraryDir, rendererLibrary) }
+                .getOrNull()?.takeIf { it.exists() }
+                ?.let { JREUtils.dlopenSafe(it.absolutePath) } == true
+        if (!loaded) IbbLog.w(TAG, "Renderer $rendererLibrary not found; the bridge will fall back to gl4es")
         return loaded
     }
 

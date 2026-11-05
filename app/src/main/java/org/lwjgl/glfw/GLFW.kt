@@ -1,17 +1,23 @@
 package org.lwjgl.glfw
 
 /**
- * GLFW 3 shim used by Minecraft 1.13+ when running on Android.
+ * GLFW 3 shim **contract** used by Minecraft 1.13+ on Android.
  *
- * In a Pojav-class launcher the real `lwjgl-glfw` module is replaced by a "glfwstub" that
- * implements the handful of GLFW calls Minecraft makes (window creation, polling, callbacks,
- * clipboard) on top of a single implicit EGL window owned by the Android SurfaceView. Minecraft's
- * code paths do not change at all.
+ * ==============================================================================================
+ * Important: this file is *not* the implementation used by the game
+ * ==============================================================================================
+ * Minecraft runs against `glfw-stub.jar` (the `org.lwjgl.glfw` package shipped by the bridge
+ * project), which is placed **first** on the classpath at launch — see `GameLauncher`. That jar
+ * owns the real `GLFW` class, including the static fields the native layer binds to:
  *
- * The stub ships in `assets/lwjgl3/glfw-stub.jar` and is prepended to the classpath at launch
- * (see `GameLauncher`). This Kotlin file documents the contract and provides the constants that
- * our own (non-game) code uses; it is **replaced** by the jar at runtime, which is why it only
- * declares what we need.
+ *  * `keyDownBuffer`  — `Ljava/nio/ByteBuffer;`
+ *  * `mouseDownBuffer`— `Ljava/nio/ByteBuffer;`
+ *  * `glfwSetWindowAttrib(JII)V`, `internalWindowSizeChanged(J)V`,
+ *    `internalChangeMonitorSize(II)V`
+ *
+ * This class only declares the constants and the tiny surface our own (launcher-side) code touches,
+ * so the launcher compiles without depending on the jar. If you add fields here, mirror them in
+ * `glfw-stub.jar` before the native layer will find them.
  */
 object GLFW {
 
@@ -39,12 +45,18 @@ object GLFW {
     const val GLFW_CURSOR_NORMAL = 0x00034001
     const val GLFW_CURSOR_DISABLED = 0x00034003
 
-    @JvmStatic external fun glfwInit(): Boolean
-    @JvmStatic external fun glfwTerminate()
-    @JvmStatic external fun glfwPollEvents()
-    @JvmStatic external fun glfwSwapBuffers(window: Long)
-    @JvmStatic external fun glfwSetInputMode(window: Long, mode: Int, value: Int)
-    @JvmStatic external fun glfwGetKey(window: Long, key: Int): Int
-    @JvmStatic external fun glfwGetWindowSize(window: Long, width: IntArray?, height: IntArray?)
-    @JvmStatic external fun glfwSetWindowTitle(window: Long, title: CharSequence?)
+    // LWJGL scancodes for the keys the on-screen controller sends. Using the scancode path avoids
+    // the GLFW key-code lookup table and works for every layout.
+    const val SCANCODE_ESCAPE = 1
+    const val SCANCODE_W = 17
+    const val SCANCODE_A = 30
+    const val SCANCODE_S = 31
+    const val SCANCODE_D = 32
+    const val SCANCODE_SPACE = 57
+    const val SCANCODE_LEFT_SHIFT = 42
+    const val SCANCODE_TAB = 15
+    const val SCANCODE_E = 18
+    const val SCANCODE_Q = 16
+    const val SCANCODE_F1 = 59
+    const val SCANCODE_F5 = 63
 }

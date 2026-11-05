@@ -106,7 +106,7 @@ class SettingsStore(context: Context) {
         val total = totalRamMb()
         return LauncherSettings(
             graphics = GraphicsOptions(
-                renderer = Renderer.fromId(prefs.getString(KEY_RENDERER, Renderer.ANGLE_GLES.id)),
+                renderer = Renderer.fromId(prefs.getString(KEY_RENDERER, Renderer.GL4ES.id)),
                 scaleFactor = prefs.getFloat(KEY_SCALE, 1.0f).coerceIn(0.5f, 2.0f),
                 vsync = prefs.getBoolean(KEY_VSYNC, true),
                 maxFrameRate = prefs.getInt(KEY_MAX_FPS, 60).coerceIn(30, 240),

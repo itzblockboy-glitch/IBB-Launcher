@@ -42,16 +42,14 @@ android {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         }
 
-        // Native code is opt-in: by default the execution layer is consumed as prebuilt
-        // `jniLibs` (PojavLauncher's GPLv3 `pojavexec`/`exithook`), so `assembleDebug` needs no
-        // NDK. Pass -PwithNative=true to also build the optional C++ shim in src/main/cpp.
-        if (project.hasProperty("withNative")) {
-            ndkVersion = "27.0.12077973"
-            externalNativeBuild {
-                cmake {
-                    cppFlags += listOf("-std=c++17", "-fno-exceptions")
-                    arguments += listOf("-DANDROID_STL=c++_static")
-                }
+        // The execution layer (pojavexec / exithook) is compiled from src/main/jni with ndk-build.
+        // The sources are the PojavLauncher GPLv3 C sources; `prefab` supplies bytehook, which the
+        // exit hook uses to intercept exit()/chmod(). Any machine with the NDK can build this.
+        ndkVersion = "27.0.12077973"
+        externalNativeBuild {
+            ndkBuild {
+                // 16 KB page alignment is required for Android 15+ devices.
+                arguments += listOf("-j${Runtime.getRuntime().availableProcessors()}")
             }
         }
     }
@@ -133,13 +131,15 @@ android {
         jniLibs.useLegacyPackaging = false
     }
 
-    if (project.hasProperty("withNative")) {
-        externalNativeBuild {
-            cmake {
-                path = file("src/main/cpp/CMakeLists.txt")
-                version = "3.22.1"
-            }
+    externalNativeBuild {
+        ndkBuild {
+            path = file("src/main/jni/Android.mk")
         }
+    }
+
+    // `prefab` is required for the bytehook dependency of the exit hook.
+    buildFeatures {
+        prefab = true
     }
 
     androidResources {
@@ -184,6 +184,9 @@ dependencies {
     implementation(libs.tukaani.xz)
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
+    // Native hooking library used by libexithook.so (intercepts exit()/chmod()).
+    implementation("com.bytedance:bytehook:1.0.9")
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

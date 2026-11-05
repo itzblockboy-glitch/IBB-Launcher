@@ -50,6 +50,24 @@ jobs:
           echo "---"
           java -version
 
+      - name: Show NDK
+        run: |
+          # ndk-build compiles src/main/jni (the PojavLauncher-derived execution layer).
+          ls "$ANDROID_HOME/ndk" || true
+          NDK_DIR=$(ls -d "$ANDROID_HOME"/ndk/* | sort -V | tail -1)
+          echo "NDK at $NDK_DIR"
+          echo "ANDROID_NDK_HOME=$NDK_DIR" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_ROOT=$NDK_DIR" >> "$GITHUB_ENV"
+
+      - name: Fetch prebuilt native libraries
+        run: |
+          # LWJGL-on-Android, gl4es, OSMesa, OpenAL, freetype, JNA, unpack200 — third-party
+          # binaries kept out of git (see tools/fetch_native_libs.sh).
+          chmod +x tools/fetch_native_libs.sh
+          tools/fetch_native_libs.sh app/src/main/jniLibs
+          du -sh app/src/main/jniLibs
+          find app/src/main/jniLibs -name '*.so' | wc -l
+
       - name: Gradle cache
         uses: actions/cache@v4
         with:
