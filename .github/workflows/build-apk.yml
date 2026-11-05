@@ -123,6 +123,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "publish: pwd=$(pwd) out=$(ls -la out 2>/dev/null | tail -3) apks=$(ls out/*.apk 2>/dev/null | wc -l)"
           # Actions log/artifact blobs live on a CDN that is not reachable from every client, so the
           # build publishes its own log (and, on success, the APK) as files via the Contents API.
           set -e
