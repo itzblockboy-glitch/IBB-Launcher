@@ -1,0 +1,311 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets FROM-CACHE
+> Task :app:l8DexDesugarLibDebug FROM-CACHE
+> Task :app:desugarDebugFileDependencies FROM-CACHE
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics FROM-CACHE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses
+> Task :app:mergeDebugJavaResource
+> Task :app:configureNdkBuildDebug[arm64-v8a]
+> Task :app:mergeExtDexDebug FROM-CACHE
+> Task :app:mergeLibDexDebug FROM-CACHE
+
+> Task :app:buildNdkBuildDebug[arm64-v8a]
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+C/C++:   467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+C/C++:       |                                                                                             ~^
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+C/C++:    39 |         printf(error_message);                                             \
+C/C++:       |                ^~~~~~~~~~~~~
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:119:69: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+C/C++:   119 |             printf("Failed to set signal hander for signal %i: %s", i, strerror(errno));
+C/C++:       |                                                            ~~       ^
+C/C++:       |                                                            %zu
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:    87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+C/C++:       |                                                          ~~     ^~~~~~~~~~~~~~~
+C/C++:       |                                                          %d
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/swap_interval_no_egl.c:238:29: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+C/C++:   237 |         LOGW("ANativeWindow version does not match. Expected %i, got %i",
+C/C++:       |                                                              ~~
+C/C++:       |                                                              %lu
+C/C++:   238 |                             sizeof(struct ANativeWindow_real), nativeWindowReal->common.version);
+C/C++:       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/log.h:15:65: note: expanded from macro 'LOGW'
+C/C++:    15 | #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,    TAG, __VA_ARGS__)
+C/C++:       |                                                                 ^~~~~~~~~~~
+C/C++: 1 warning generated.
+
+> Task :app:mergeProjectDexDebug
+> Task :app:configureNdkBuildDebug[armeabi-v7a]
+
+> Task :app:buildNdkBuildDebug[armeabi-v7a]
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+C/C++:   467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+C/C++:       |                                                                                             ~^
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+C/C++:    39 |         printf(error_message);                                             \
+C/C++:       |                ^~~~~~~~~~~~~
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:    87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+C/C++:       |                                                          ~~     ^~~~~~~~~~~~~~~
+C/C++:       |                                                          %d
+C/C++: 1 warning generated.
+
+> Task :app:configureNdkBuildDebug[x86_64]
+
+> Task :app:buildNdkBuildDebug[x86_64]
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:119:69: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+C/C++:   119 |             printf("Failed to set signal hander for signal %i: %s", i, strerror(errno));
+C/C++:       |                                                            ~~       ^
+C/C++:       |                                                            %zu
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+C/C++:   467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+C/C++:       |                                                                                             ~^
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+C/C++:    39 |         printf(error_message);                                             \
+C/C++:       |                ^~~~~~~~~~~~~
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:    87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+C/C++:       |                                                          ~~     ^~~~~~~~~~~~~~~
+C/C++:       |                                                          %d
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/swap_interval_no_egl.c:238:29: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+C/C++:   237 |         LOGW("ANativeWindow version does not match. Expected %i, got %i",
+C/C++:       |                                                              ~~
+C/C++:       |                                                              %lu
+C/C++:   238 |                             sizeof(struct ANativeWindow_real), nativeWindowReal->common.version);
+C/C++:       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/log.h:15:65: note: expanded from macro 'LOGW'
+C/C++:    15 | #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,    TAG, __VA_ARGS__)
+C/C++:       |                                                                 ^~~~~~~~~~~
+C/C++: 1 warning generated.
+
+> Task :app:mergeDebugJniLibFolders
+
+> Task :app:mergeDebugNativeLibs
+2 files found for path 'lib/armeabi-v7a/libbytehook.so'. This version of the Android Gradle Plugin chooses the file from the app or dynamic-feature module, but this can cause unexpected behavior or errors at runtime. Future versions of the Android Gradle Plugin may throw an error in this case.
+Inputs:
+ - /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj/local/armeabi-v7a/libbytehook.so
+ - /home/runner/.gradle/caches/8.13/transforms/031e0761f82a3878ec0941cc2b603819/transformed/bytehook-1.0.9/jni/armeabi-v7a/libbytehook.so
+
+2 files found for path 'lib/arm64-v8a/libbytehook.so'. This version of the Android Gradle Plugin chooses the file from the app or dynamic-feature module, but this can cause unexpected behavior or errors at runtime. Future versions of the Android Gradle Plugin may throw an error in this case.
+Inputs:
+ - /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj/local/arm64-v8a/libbytehook.so
+ - /home/runner/.gradle/caches/8.13/transforms/031e0761f82a3878ec0941cc2b603819/transformed/bytehook-1.0.9/jni/arm64-v8a/libbytehook.so
+
+2 files found for path 'lib/x86_64/libbytehook.so'. This version of the Android Gradle Plugin chooses the file from the app or dynamic-feature module, but this can cause unexpected behavior or errors at runtime. Future versions of the Android Gradle Plugin may throw an error in this case.
+Inputs:
+ - /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Debug/2a2e3141/obj/local/x86_64/libbytehook.so
+ - /home/runner/.gradle/caches/8.13/transforms/031e0761f82a3878ec0941cc2b603819/transformed/bytehook-1.0.9/jni/x86_64/libbytehook.so
+
+
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:stripDebugDebugSymbols
+> Task :app:configureNdkBuildRelease[arm64-v8a]
+
+> Task :app:buildNdkBuildRelease[arm64-v8a]
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:119:69: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+C/C++:   119 |             printf("Failed to set signal hander for signal %i: %s", i, strerror(errno));
+C/C++:       |                                                            ~~       ^
+C/C++:       |                                                            %zu
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+C/C++:   467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+C/C++:       |                                                                                             ~^
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+C/C++:    39 |         printf(error_message);                                             \
+C/C++:       |                ^~~~~~~~~~~~~
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:    87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+C/C++:       |                                                          ~~     ^~~~~~~~~~~~~~~
+C/C++:       |                                                          %d
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/swap_interval_no_egl.c:238:29: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+C/C++:   237 |         LOGW("ANativeWindow version does not match. Expected %i, got %i",
+C/C++:       |                                                              ~~
+C/C++:       |                                                              %lu
+C/C++:   238 |                             sizeof(struct ANativeWindow_real), nativeWindowReal->common.version);
+C/C++:       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/log.h:15:65: note: expanded from macro 'LOGW'
+C/C++:    15 | #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,    TAG, __VA_ARGS__)
+C/C++:       |                                                                 ^~~~~~~~~~~
+C/C++: 1 warning generated.
+
+> Task :app:configureNdkBuildRelease[armeabi-v7a]
+
+> Task :app:buildNdkBuildRelease[armeabi-v7a]
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+C/C++:   467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+C/C++:       |                                                                                             ~^
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+C/C++:    39 |         printf(error_message);                                             \
+C/C++:       |                ^~~~~~~~~~~~~
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:    87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+C/C++:       |                                                          ~~     ^~~~~~~~~~~~~~~
+C/C++:       |                                                          %d
+C/C++: 1 warning generated.
+
+> Task :app:configureNdkBuildRelease[x86_64]
+
+> Task :app:buildNdkBuildRelease[x86_64]
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/jre_launcher.c:119:69: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+C/C++:   119 |             printf("Failed to set signal hander for signal %i: %s", i, strerror(errno));
+C/C++:       |                                                            ~~       ^
+C/C++:       |                                                            %zu
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:467:94: warning: more '%' conversions than data arguments [-Wformat-insufficient-args]
+C/C++:   467 |     TRY_ATTACH_ENV(jvm_env, pojav_environ->runtimeJavaVMPtr, "nativeSetWindowAttrib failed: %i", return;);
+C/C++:       |                                                                                             ~^
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/input_bridge_v3.c:39:16: note: expanded from macro 'TRY_ATTACH_ENV'
+C/C++:    39 |         printf(error_message);                                             \
+C/C++:       |                ^~~~~~~~~~~~~
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/gl_bridge.c:87:65: warning: format specifies type 'void *' but the argument has type 'EGLint' (aka 'int') [-Wformat]
+C/C++:    87 |         if (!bindResult) printf("EGLBridge: bind failed: %p\n", eglGetError_p());
+C/C++:       |                                                          ~~     ^~~~~~~~~~~~~~~
+C/C++:       |                                                          %d
+C/C++: 1 warning generated.
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/ctxbridges/swap_interval_no_egl.c:238:29: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+C/C++:   237 |         LOGW("ANativeWindow version does not match. Expected %i, got %i",
+C/C++:       |                                                              ~~
+C/C++:       |                                                              %lu
+C/C++:   238 |                             sizeof(struct ANativeWindow_real), nativeWindowReal->common.version);
+C/C++:       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/jni/log.h:15:65: note: expanded from macro 'LOGW'
+C/C++:    15 | #define LOGW(...) __android_log_print(ANDROID_LOG_WARN,    TAG, __VA_ARGS__)
+C/C++:       |                                                                 ^~~~~~~~~~~
+C/C++: 1 warning generated.
+
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeReleaseArtProfile
+> Task :app:buildKotlinToolingMetadata
+
+> Task :app:mergeReleaseNativeLibs
+2 files found for path 'lib/armeabi-v7a/libbytehook.so'. This version of the Android Gradle Plugin chooses the file from the app or dynamic-feature module, but this can cause unexpected behavior or errors at runtime. Future versions of the Android Gradle Plugin may throw an error in this case.
+Inputs:
+ - /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Release/3l1g83x6/obj/local/armeabi-v7a/libbytehook.so
+ - /home/runner/.gradle/caches/8.13/transforms/031e0761f82a3878ec0941cc2b603819/transformed/bytehook-1.0.9/jni/armeabi-v7a/libbytehook.so
+
+2 files found for path 'lib/arm64-v8a/libbytehook.so'. This version of the Android Gradle Plugin chooses the file from the app or dynamic-feature module, but this can cause unexpected behavior or errors at runtime. Future versions of the Android Gradle Plugin may throw an error in this case.
+Inputs:
+ - /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Release/3l1g83x6/obj/local/arm64-v8a/libbytehook.so
+ - /home/runner/.gradle/caches/8.13/transforms/031e0761f82a3878ec0941cc2b603819/transformed/bytehook-1.0.9/jni/arm64-v8a/libbytehook.so
+
+2 files found for path 'lib/x86_64/libbytehook.so'. This version of the Android Gradle Plugin chooses the file from the app or dynamic-feature module, but this can cause unexpected behavior or errors at runtime. Future versions of the Android Gradle Plugin may throw an error in this case.
+Inputs:
+ - /home/runner/work/IBB-Launcher/IBB-Launcher/app/build/intermediates/cxx/Release/3l1g83x6/obj/local/x86_64/libbytehook.so
+ - /home/runner/.gradle/caches/8.13/transforms/031e0761f82a3878ec0941cc2b603819/transformed/bytehook-1.0.9/jni/x86_64/libbytehook.so
+
+
+> Task :app:expandReleaseL8ArtProfileWildcards FROM-CACHE
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :app:generateReleaseBuildConfig FROM-CACHE
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:generateReleaseResValues FROM-CACHE
+> Task :app:checkReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources FROM-CACHE
+> Task :app:stripReleaseDebugSymbols
+> Task :app:mergeReleaseResources FROM-CACHE
+> Task :app:extractReleaseNativeSymbolTables FROM-CACHE
+> Task :app:packageReleaseResources FROM-CACHE
+> Task :app:parseReleaseLocalResources FROM-CACHE
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease FROM-CACHE
+> Task :app:processReleaseMainManifest FROM-CACHE
+> Task :app:processReleaseManifest FROM-CACHE
+> Task :app:processReleaseManifestForPackage FROM-CACHE
+> Task :app:processReleaseResources FROM-CACHE
+> Task :app:mergeReleaseNativeDebugMetadata
+> Task :app:javaPreCompileRelease FROM-CACHE
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets FROM-CACHE
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:validateSigningRelease
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+
+> Task :app:compileReleaseKotlin
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/core/CrashHandler.kt:33:21 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'SimpleDateFormat?'.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/core/IbbLog.kt:46:25 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'SimpleDateFormat?'.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/runtime/RuntimeManager.kt:236:63 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type 'File?'.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/game/GameSurfaceHost.kt:119:50 'val LocalClipboardManager: ProvidableCompositionLocal<ClipboardManager>' is deprecated. Use LocalClipboard instead which supports suspend functions.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/game/overlay/GameToolbar.kt:128:46 'val Icons.Rounded.ExitToApp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.ExitToApp.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/screens/AccountsScreen.kt:88:21 'val LocalClipboardManager: ProvidableCompositionLocal<ClipboardManager>' is deprecated. Use LocalClipboard instead which supports suspend functions.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/screens/AccountsScreen.kt:123:42 'val Icons.Rounded.Login: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.Login.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/screens/AccountsScreen.kt:191:50 'val Icons.Rounded.OpenInNew: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Rounded.OpenInNew.
+w: file:///home/runner/work/IBB-Launcher/IBB-Launcher/app/src/main/java/dev/ibb/launcher/ui/screens/ConsoleScreen.kt:77:21 'val LocalClipboardManager: ProvidableCompositionLocal<ClipboardManager>' is deprecated. Use LocalClipboard instead which supports suspend functions.
+
+> Task :app:compileReleaseJavaWithJavac
+> Task :app:mergeReleaseGeneratedProguardFiles
+> Task :app:processReleaseJavaRes
+> Task :app:mergeReleaseJavaResource
+> Task :app:expandReleaseArtProfileWildcards
+> Task :app:minifyReleaseWithR8
+> Task :app:convertShrunkResourcesToBinaryRelease FROM-CACHE
+> Task :app:optimizeReleaseResources FROM-CACHE
+> Task :app:l8DexDesugarLibRelease
+> Task :app:compileReleaseArtProfile
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+
+[Incubating] Problems report is available at: file:///home/runner/work/IBB-Launcher/IBB-Launcher/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 33s
+98 actionable tasks: 57 executed, 23 from cache, 18 up-to-date
